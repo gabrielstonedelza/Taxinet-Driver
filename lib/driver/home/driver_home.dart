@@ -152,9 +152,11 @@ class _DriverHomeState extends State<DriverHome>
     if (storage.read("username") != null) {
       username = storage.read("username");
     }
+
     getAllTriggeredNotifications(uToken);
 
     final appState = Provider.of<AppState>(context, listen: false);
+
     appState.getDriversUpdatedLocations(uToken);
     _timer = Timer.periodic(const Duration(seconds: 60), (timer) {
       appState.deleteDriversLocations(uToken);
@@ -172,7 +174,7 @@ class _DriverHomeState extends State<DriverHome>
       for(var i in notRead){
         if(i['notification_title'] == "New Ride Request" && i['read'] == "Not Read"){
 
-          Get.to(() => AcceptAndRejectRide(pickUpLat:i['passengers_lat'],pickUpLng:i['passengers_lng'],dropOffId:i['drop_off_place_id'],dropOff:i['passengers_dropff'],rideDuration:i['ride_duration'],rideDistance:i['ride_distance'],pickUp:i['passengers_pickup'],notificationFrom:i['notification_from'].toString(),notificationTo:i['notification_to'].toString(),rideId:i['ride_id']));
+          Get.to(() => AcceptAndRejectRide(pickUpLat:i['passengers_lat'],pickUpLng:i['passengers_lng'],dropOffId:i['drop_off_place_id'],dropOff:i['passengers_dropff'],rideDuration:i['ride_duration'],rideDistance:i['ride_distance'],pickUp:i['passengers_pickup'],notificationFrom:i['notification_from'].toString(),notificationTo:i['notification_to'].toString(),rideId:i['ride_id'],passPickUpId:i['pick_up_place_id']));
           updateReadNotification(i['id']);
           updateDriveBookedStatus(i['ride_id'].toString(),i['notification_to'].toString());
         }

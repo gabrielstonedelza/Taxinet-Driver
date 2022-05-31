@@ -20,6 +20,7 @@ late StreamSubscription<Position> streamSubscription;
 class DeMapController extends GetxController {
   String myLocationName = "";
   bool isLoading = true;
+  static DeMapController get to => Get.find<DeMapController>();
 
   @override
   void onInit() {
@@ -28,7 +29,7 @@ class DeMapController extends GetxController {
     getUserLocation();
   }
 
-  Future<void> getUserLocation() async {
+  Future<Object> getUserLocation() async {
     bool serviceEnabled;
     LocationPermission permission;
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -49,21 +50,23 @@ class DeMapController extends GetxController {
           'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    return await userLocation();
+    return getCurrentLocation();
   }
 
-  Future<void> userLocation() async {
+  Stream<Position> getCurrentLocation(){
+    const LocationSettings locationSettings = LocationSettings(
+      accuracy: LocationAccuracy.high,
+      distanceFilter: 10,
+    );
     streamSubscription = Geolocator.getPositionStream().listen((Position position) {
       userLatitude = position.latitude;
       userLongitude = position.longitude;
     });
-    // Position position = await Geolocator.getCurrentPosition(
-    //     desiredAccuracy: LocationAccuracy.high,
-    //     timeLimit: const Duration(seconds: 20),
-    //     forceAndroidLocationManager: true);
-    // userLatitude = position.latitude;
-    // userLongitude = position.longitude;
+    return Geolocator.getPositionStream(
+        locationSettings: locationSettings
+    );
   }
+
 
   @override
   void onClose() {
@@ -78,6 +81,9 @@ class AppState with ChangeNotifier {
   final String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
   final String distanceApi =
       "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Adum&origins=Buokrom&units=imperial&key=AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
+
+  late double lat = userLatitude;
+  late double lng = userLongitude;
 
   late GoogleMapController _mapController;
   TextEditingController locationController = TextEditingController();
@@ -225,8 +231,7 @@ class AppState with ChangeNotifier {
   Future<void> userLocation() async {
     try {
       isLoading = true;
-      List<Placemark> placemark =
-          await placemarkFromCoordinates(userLatitude, userLongitude);
+      List<Placemark> placemark = await placemarkFromCoordinates(userLatitude, userLongitude);
 
       myLocationName = placemark[2].street!;
       locationController.text = myLocationName;
@@ -463,6 +468,8 @@ class AppState with ChangeNotifier {
       "Authorization": "Token $token"
     }, body: {
       "place_id": dPlaceId,
+      "drivers_lat": userLatitude.toString(),
+      "drivers_lng": userLongitude.toString(),
     });
     if (response.statusCode == 201) {
       // Get.snackbar(
@@ -499,6 +506,20 @@ class AppState with ChangeNotifier {
     } finally {
       isLoading = false;
     }
+  }
+  driverAcceptRideAndUpdateStatus(String token,String rideId, String driver) async {
+    final requestUrl =
+        "https://taxinetghana.xyz/update_requested_ride/$rideId/";
+    final myLink = Uri.parse(requestUrl);
+    final response = await http.put(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $token"
+    }, body: {
+      "driver": driver,
+      "ride_rejected": "True",
+    });
+    if (response.statusCode == 200) {}
   }
 
   Future<void> getAllTriggeredNotifications(String token) async {
@@ -561,8 +582,6 @@ class AppState with ChangeNotifier {
     }
   }
   late List allBids = [];
-  late double biddedPrice = 0.0;
-  double get agreedPrice => biddedPrice;
 
   Future<void> getBids(String rideId,String token)async {
     try {
@@ -576,7 +595,6 @@ class AppState with ChangeNotifier {
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         allBids.assignAll(jsonData);
-        // biddedPrice = allBids.last;
         notifyListeners();
       }
     }
