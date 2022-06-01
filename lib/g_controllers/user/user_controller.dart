@@ -76,10 +76,10 @@ class UserController extends GetxController {
       }
       update();
     } else {
-      Get.snackbar("Error", "Couldn't find user data",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red);
+      // Get.snackbar("Error", "Couldn't find user data",
+      //     colorText: Colors.white,
+      //     snackPosition: SnackPosition.BOTTOM,
+      //     backgroundColor: Colors.red);
     }
   }
 }

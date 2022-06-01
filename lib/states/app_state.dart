@@ -244,10 +244,10 @@ class AppState with ChangeNotifier {
         dPlaceId = values['candidates'][0]['place_id'];
       }
     } catch (e) {
-      Get.snackbar("Sorry 😢", "Your location couldn't be found",
-          colorText: defaultTextColor1,
-          snackPosition: SnackPosition.TOP,
-          backgroundColor: primaryColor);
+      // Get.snackbar("Sorry 😢", "Your location couldn't be found",
+      //     colorText: defaultTextColor1,
+      //     snackPosition: SnackPosition.TOP,
+      //     backgroundColor: primaryColor);
     } finally {
       isLoading = false;
       notifyListeners();
@@ -420,11 +420,11 @@ class AppState with ChangeNotifier {
         notifyListeners();
       }
     } catch (e) {
-      Get.snackbar("Sorry",
-          "something happened or please check your internet connection",
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red,
-          colorText: defaultTextColor1);
+      // Get.snackbar("Sorry",
+      //     "something happened or please check your internet connection",
+      //     snackPosition: SnackPosition.BOTTOM,
+      //     backgroundColor: Colors.red,
+      //     colorText: defaultTextColor1);
     } finally {
       isLoading = false;
     }

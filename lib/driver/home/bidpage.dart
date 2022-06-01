@@ -188,14 +188,7 @@ class _BidPriceState extends State<BidPrice> {
             children: [
               SizedBox(
                 height: 500,
-                child: appState.loading
-                    ? const Center(
-                        child: CircularProgressIndicator.adaptive(
-                          strokeWidth: 5,
-                          backgroundColor: primaryColor,
-                        ),
-                      )
-                    : ListView.builder(
+                child:ListView.builder(
                         itemCount: appState.allBids != null
                             ? appState.allBids.length
                             : 0,
