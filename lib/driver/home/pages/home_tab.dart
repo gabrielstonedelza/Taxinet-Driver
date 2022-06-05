@@ -41,6 +41,7 @@ class _HomePageState extends State<HomePage> {
               initialCameraPosition:
               CameraPosition(target: appState.initialPosition, zoom: 15),
               myLocationButtonEnabled: false,
+              trafficEnabled: true,
               zoomControlsEnabled: false,
               mapType: MapType.normal,
               onMapCreated: (GoogleMapController controller){

@@ -68,6 +68,20 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
     } else {}
   }
 
+  addToAcceptedRides() async {
+    const bidUrl = "https://taxinetghana.xyz/add_to_accepted_rides/";
+    final myLink = Uri.parse(bidUrl);
+    http.Response response = await http.post(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      "Authorization": "Token $uToken"
+    }, body: {
+      "ride": rideId,
+      "driver": notificationTo,
+    });
+    if (response.statusCode == 201) {
+    } else {}
+  }
+
 
   @override
   void initState() {
@@ -112,6 +126,7 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                   myLocationButtonEnabled: false,
                   zoomControlsEnabled: false,
                   mapType: MapType.normal,
+                  trafficEnabled: true,
                   onMapCreated: (GoogleMapController controller) {
                     _mapController.complete(controller);
                     controller.setMapStyle(Utils.mapStyle);
@@ -193,6 +208,7 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                             padding: const EdgeInsets.only(left: 18.0,right: 18.0),
                             child: RawMaterialButton(
                               onPressed: () {
+                                addToAcceptedRides();
                                 Get.to(()=> BidPrice(rideId:rideId,driver:notificationTo, pickUp: pickUp,passPickUpId: passPickUpId,passengersLat:pickUpLat,passengersLng:pickUpLng));
                               },
                               shape: RoundedRectangleBorder(

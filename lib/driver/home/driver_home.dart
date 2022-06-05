@@ -158,14 +158,14 @@ class _DriverHomeState extends State<DriverHome>
     final appState = Provider.of<AppState>(context, listen: false);
 
     appState.getDriversUpdatedLocations(uToken);
-    _timer = Timer.periodic(const Duration(seconds: 60), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       appState.deleteDriversLocations(uToken);
     });
-    _timer = Timer.periodic(const Duration(seconds: 30), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
       appState.sendLocation(uToken);
     });
 
-    _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       getAllTriggeredNotifications(uToken);
       getAllUnReadNotifications(uToken);
       for(var i in triggered){

@@ -24,6 +24,7 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
   var uToken = "";
   final storage = GetStorage();
   var username = "";
+  late Timer _timer;
 
   _RouteToPassengerState({required this.pickUp, required this.passPickUpId});
   final Completer<GoogleMapController> _mapController = Completer();
@@ -46,6 +47,10 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
     final appState = Provider.of<AppState>(context, listen: false);
     appState.sendRequest(pickUp);
     appState.setSelectedLocation(passPickUpId);
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
+      appState.sendRequest(pickUp);
+      appState.setSelectedLocation(passPickUpId);
+    });
     // print(appState.initialPosition);
     // print(pickUp);
     // if(appState.initialPosition == pickUp){
@@ -72,6 +77,7 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
                 target: appState.initialPosition, zoom: 11.5),
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
+            trafficEnabled: true,
             mapType: MapType.normal,
             onMapCreated: (GoogleMapController controller) {
               _mapController.complete(controller);
