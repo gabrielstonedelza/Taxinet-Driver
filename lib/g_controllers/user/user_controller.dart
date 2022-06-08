@@ -49,10 +49,10 @@ class UserController extends GetxController {
       storage.write("user_id", userId);
       update();
     } else {
-      Get.snackbar("Error", "Couldn't find user data",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red);
+      // Get.snackbar("Error", "Couldn't find user data",
+      //     colorText: Colors.white,
+      //     snackPosition: SnackPosition.BOTTOM,
+      //     backgroundColor: Colors.red);
     }
   }
 

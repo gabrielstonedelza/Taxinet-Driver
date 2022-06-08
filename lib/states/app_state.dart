@@ -16,11 +16,14 @@ import '../models/place.dart';
 late double userLatitude = 0.0;
 late double userLongitude = 0.0;
 late StreamSubscription<Position> streamSubscription;
+late String myLocationName = "";
+late String dPlaceId = "";
+
 
 class DeMapController extends GetxController {
-  String myLocationName = "";
   bool isLoading = true;
   static DeMapController get to => Get.find<DeMapController>();
+  String apiKey = "AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
 
   @override
   void onInit() {
@@ -62,9 +65,34 @@ class DeMapController extends GetxController {
       userLatitude = position.latitude;
       userLongitude = position.longitude;
     });
+    userLocation();
+
     return Geolocator.getPositionStream(
         locationSettings: locationSettings
     );
+  }
+  Future<void> userLocation() async {
+    try {
+      isLoading = true;
+      List<Placemark> placemark = await placemarkFromCoordinates(userLatitude, userLongitude);
+
+      myLocationName = placemark[2].street!;
+      var url = Uri.parse(
+          "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$myLocationName&inputtype=textquery&key=$apiKey");
+      http.Response response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        var values = jsonDecode(response.body);
+        dPlaceId = values['candidates'][0]['place_id'];
+      }
+    } catch (e) {
+      // Get.snackbar("Sorry 😢", "Your location couldn't be found",
+      //     colorText: defaultTextColor1,
+      //     snackPosition: SnackPosition.TOP,
+      //     backgroundColor: primaryColor);
+    } finally {
+      isLoading = false;
+    }
   }
 
 
@@ -468,6 +496,7 @@ class AppState with ChangeNotifier {
       "Authorization": "Token $token"
     }, body: {
       "place_id": dPlaceId,
+      "location_name": myLocationName,
       "drivers_lat": userLatitude.toString(),
       "drivers_lng": userLongitude.toString(),
     });
