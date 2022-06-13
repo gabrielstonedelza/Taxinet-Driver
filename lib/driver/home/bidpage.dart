@@ -74,6 +74,20 @@ class _BidPriceState extends State<BidPrice> {
     });
     if (response.statusCode == 200) {}
   }
+  driverAcceptRideAndOnRoute(String rideId, String driver) async {
+    final requestUrl =
+        "https://taxinetghana.xyz/update_requested_ride/$rideId/";
+    final myLink = Uri.parse(requestUrl);
+    final response = await http.put(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    }, body: {
+      "driver": driver,
+      "driver_on_route": "True",
+    });
+    if (response.statusCode == 200) {}
+  }
 
   addToRejectedRides() async {
     const bidUrl = "https://taxinetghana.xyz/add_to_rejected_rides/";
@@ -223,7 +237,7 @@ class _BidPriceState extends State<BidPrice> {
                                           padding:
                                               const EdgeInsets.only(top: 8.0),
                                           child: Text(
-                                            items['bid'],
+                                            "GHS ${items['bid']}",
                                             style: const TextStyle(
                                                 color: Colors.red,
                                                 fontWeight: FontWeight.bold),
@@ -246,60 +260,83 @@ class _BidPriceState extends State<BidPrice> {
                   padding: const EdgeInsets.only(left: 18.0, right: 18.0),
                   child: RawMaterialButton(
                     onPressed: () {
+                      // Get.defaultDialog(
+                      //   title: "Confirm Bid",
+                      //   middleText: "Are you sure you want to accept bid",
+                      //   barrierDismissible: false,
+                      //   content: Row(
+                      //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      //     children: [
+                      //       RawMaterialButton(
+                      //         onPressed: () {
+                      //           addToCompletedBidRides();
+                      //           driverAcceptRideAndUpdateStatus(rideId, driver,
+                      //               double.parse(appState.allBids.last['bid']));
+                      //           driverAcceptRideAndOnRoute(rideId, driver);
+                      //           appState.polyLines.clear();
+                      //           appState.markers.clear();
+                      //           Get.offAll(()=> RouteToPassenger(pickUp: pickUp, passPickUpId: passPickUpId));
+                      //         },
+                      //         shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(12)),
+                      //         elevation: 8,
+                      //         child: const Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text(
+                      //             "Yes",
+                      //             style: TextStyle(
+                      //                 fontWeight: FontWeight.bold,
+                      //                 fontSize: 15,
+                      //                 color: defaultTextColor1),
+                      //           ),
+                      //         ),
+                      //         fillColor: primaryColor,
+                      //         splashColor: defaultColor,
+                      //       ),
+                      //       RawMaterialButton(
+                      //         onPressed: () {
+                      //           Get.back();
+                      //         },
+                      //         shape: RoundedRectangleBorder(
+                      //             borderRadius: BorderRadius.circular(12)),
+                      //         elevation: 8,
+                      //         child: const Padding(
+                      //           padding: EdgeInsets.all(8.0),
+                      //           child: Text(
+                      //             "No",
+                      //             style: TextStyle(
+                      //                 fontWeight: FontWeight.bold,
+                      //                 fontSize: 15,
+                      //                 color: defaultTextColor1),
+                      //           ),
+                      //         ),
+                      //         fillColor: Colors.red,
+                      //         splashColor: defaultColor,
+                      //       ),
+                      //     ],
+                      //   )
+                      // );
                       Get.defaultDialog(
-                        title: "Confirm Bid",
-                        middleText: "Are you sure you want to accept bid",
-                        barrierDismissible: false,
-                        content: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            RawMaterialButton(
-                              onPressed: () {
+                          buttonColor: primaryColor,
+                          title: "Confirm Bid",
+                          middleText: "Are you sure you want to accept and proceed?",
+                          confirm: RawMaterialButton(
+                              shape: const StadiumBorder(),
+                              fillColor: primaryColor,
+                              onPressed: (){
                                 addToCompletedBidRides();
                                 driverAcceptRideAndUpdateStatus(rideId, driver,
                                     double.parse(appState.allBids.last['bid']));
+                                driverAcceptRideAndOnRoute(rideId, driver);
                                 appState.polyLines.clear();
                                 appState.markers.clear();
                                 Get.offAll(()=> RouteToPassenger(pickUp: pickUp, passPickUpId: passPickUpId));
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              elevation: 8,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Yes",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: defaultTextColor1),
-                                ),
-                              ),
+                              }, child: const Text("Yes",style: TextStyle(color: Colors.white),)),
+                          cancel: RawMaterialButton(
+                              shape: const StadiumBorder(),
                               fillColor: primaryColor,
-                              splashColor: defaultColor,
-                            ),
-                            RawMaterialButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12)),
-                              elevation: 8,
-                              child: const Padding(
-                                padding: EdgeInsets.all(8.0),
-                                child: Text(
-                                  "No",
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 15,
-                                      color: defaultTextColor1),
-                                ),
-                              ),
-                              fillColor: Colors.red,
-                              splashColor: defaultColor,
-                            ),
-                          ],
-                        )
+                              onPressed: (){Get.back();},
+                              child: const Text("Cancel",style: TextStyle(color: Colors.white),))
                       );
                       // driverAcceptRideAndUpdateStatus(rideId,driver,double.parse(appState.allBids.last['bid']));
                     },
