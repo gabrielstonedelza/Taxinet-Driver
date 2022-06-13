@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
+import 'package:taxinet_driver/constants/app_colors.dart';
 import 'package:taxinet_driver/driver/home/acceptandrejectride.dart';
 import 'package:taxinet_driver/driver/home/bidpage.dart';
 import 'package:taxinet_driver/driver/home/pages/rides_tab.dart';
@@ -49,10 +50,9 @@ class _DriverHomeState extends State<DriverHome>
   Future<void> getAllTriggeredNotifications(String token) async {
     const url = "https://taxinetghana.xyz/user_triggerd_notifications/";
     var myLink = Uri.parse(url);
-    final response = await http.get(myLink, headers: {
-      "Authorization": "Token $uToken"
-    });
-    if(response.statusCode == 200){
+    final response =
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
+    if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       triggeredNotifications = json.decode(jsonData);
@@ -63,26 +63,22 @@ class _DriverHomeState extends State<DriverHome>
   Future<void> getAllUnReadNotifications(String token) async {
     const url = "https://taxinetghana.xyz/user_notifications/";
     var myLink = Uri.parse(url);
-    final response = await http.get(myLink, headers: {
-      "Authorization": "Token $uToken"
-    });
-    if(response.statusCode == 200){
-
+    final response =
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
+    if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       yourNotifications = json.decode(jsonData);
       notRead.assignAll(yourNotifications);
-
     }
   }
 
   Future<void> getAllNotifications(String token) async {
     const url = "https://taxinetghana.xyz/notifications/";
     var myLink = Uri.parse(url);
-    final response = await http.get(myLink, headers: {
-      "Authorization": "Token $uToken"
-    });
-    if(response.statusCode == 200){
+    final response =
+        await http.get(myLink, headers: {"Authorization": "Token $uToken"});
+    if (response.statusCode == 200) {
       final codeUnits = response.body.codeUnits;
       var jsonData = const Utf8Decoder().convert(codeUnits);
       allNotifications = json.decode(jsonData);
@@ -94,51 +90,48 @@ class _DriverHomeState extends State<DriverHome>
     });
   }
 
-  unTriggerNotifications(int id)async{
+  unTriggerNotifications(int id) async {
     final requestUrl = "https://taxinetghana.xyz/user_read_notifications/$id/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
-    },body: {
+    }, body: {
       "notification_trigger": "Not Triggered",
     });
-    if(response.statusCode == 200){
-
-    }
+    if (response.statusCode == 200) {}
   }
-  updateReadNotification(int id)async{
+
+  updateReadNotification(int id) async {
     final requestUrl = "https://taxinetghana.xyz/user_read_notifications/$id/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
-    },body: {
+    }, body: {
       "read": "Read",
     });
-    if(response.statusCode == 200){
-
-    }
+    if (response.statusCode == 200) {}
   }
 
-  updateDriveBookedStatus(String id,String driver)async{
+  updateDriveBookedStatus(String id, String driver) async {
     final requestUrl = "https://taxinetghana.xyz/update_requested_ride/$id/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
-    },body: {
+    }, body: {
       "driver_booked": "True",
       "driver": driver,
     });
-    if(response.statusCode == 200){
-
-    }
+    if (response.statusCode == 200) {}
   }
 
+  bool locationUpdated = false;
+  bool locationDeleted = false;
 
   @override
   void initState() {
@@ -156,26 +149,48 @@ class _DriverHomeState extends State<DriverHome>
     getAllTriggeredNotifications(uToken);
 
     final appState = Provider.of<AppState>(context, listen: false);
-    _timer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    setState(() {
       appState.sendLocation(uToken);
+      locationUpdated = true;
+      locationDeleted = false;
     });
-    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
-      appState.deleteDriversLocations(uToken);
-    });
+
+      _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
+        appState.deleteDriversLocations(uToken);
+        // Get.snackbar("Delete Alert", "Location is being updated",backgroundColor: Colors.red);
+      });
+
+      _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+        appState.sendLocation(uToken);
+        // Get.snackbar("Addition Alert", "Location is being updated",backgroundColor: Colors.yellow);
+      });
 
 
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       getAllTriggeredNotifications(uToken);
       getAllUnReadNotifications(uToken);
-      for(var i in triggered){
-        localNotificationManager.showRideRequests(i['notification_title'],i['notification_message']);
+      for (var i in triggered) {
+        localNotificationManager.showRideRequests(
+            i['notification_title'], i['notification_message']);
       }
-      for(var i in notRead){
-        if(i['notification_title'] == "New Ride Request" && i['read'] == "Not Read"){
-
-          Get.to(() => AcceptAndRejectRide(pickUpLat:i['passengers_lat'],pickUpLng:i['passengers_lng'],dropOffId:i['drop_off_place_id'],dropOff:i['passengers_dropff'],rideDuration:i['ride_duration'],rideDistance:i['ride_distance'],pickUp:i['passengers_pickup'],notificationFrom:i['notification_from'].toString(),notificationTo:i['notification_to'].toString(),rideId:i['ride_id'],passPickUpId:i['pick_up_place_id']));
+      for (var i in notRead) {
+        if (i['notification_title'] == "New Ride Request" &&
+            i['read'] == "Not Read") {
+          Get.to(() => AcceptAndRejectRide(
+              pickUpLat: i['passengers_lat'],
+              pickUpLng: i['passengers_lng'],
+              dropOffId: i['drop_off_place_id'],
+              dropOff: i['passengers_dropff'],
+              rideDuration: i['ride_duration'],
+              rideDistance: i['ride_distance'],
+              pickUp: i['passengers_pickup'],
+              notificationFrom: i['notification_from'].toString(),
+              notificationTo: i['notification_to'].toString(),
+              rideId: i['ride_id'],
+              passPickUpId: i['pick_up_place_id']));
           updateReadNotification(i['id']);
-          updateDriveBookedStatus(i['ride_id'].toString(),i['notification_to'].toString());
+          updateDriveBookedStatus(
+              i['ride_id'].toString(), i['notification_to'].toString());
         }
         // if(i['notification_title'] == "New bid on price" && i['read'] == "Not Read"){
         //   Get.to(() => BidPrice(rideId: i['ride_id']));
@@ -186,37 +201,29 @@ class _DriverHomeState extends State<DriverHome>
     });
 
     _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
-      for(var e in triggered){
+      for (var e in triggered) {
         unTriggerNotifications(e["id"]);
       }
     });
 
-    localNotificationManager.setOnRideRequestNotificationReceive(onRideRequestNotification);
-    localNotificationManager.setOnRideRequestNotificationClick(onRideRequestNotificationClick);
+    localNotificationManager
+        .setOnRideRequestNotificationReceive(onRideRequestNotification);
+    localNotificationManager
+        .setOnRideRequestNotificationClick(onRideRequestNotificationClick);
   }
 
-  onRideRequestNotification(ReceiveNotification notification){
+  onRideRequestNotification(ReceiveNotification notification) {}
 
-  }
-
-  onRideRequestNotificationClick(String payload){
-
-  }
-
+  onRideRequestNotificationClick(String payload) {}
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: TabBarView(
-              controller: _tabController,
-              physics: const NeverScrollableScrollPhysics(),
-              children: const [
-                HomePage(),
-                Rides(),
-                Notifications(),
-                ProfilePage()
-              ],
-            ),
+        controller: _tabController,
+        physics: const NeverScrollableScrollPhysics(),
+        children: const [HomePage(), Rides(), Notifications(), ProfilePage()],
+      ),
       bottomNavigationBar: BottomNavigationBar(
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
