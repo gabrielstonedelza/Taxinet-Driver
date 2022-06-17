@@ -24,7 +24,7 @@ late String dPlaceId = "";
 class DeMapController extends GetxController {
   bool isLoading = true;
   static DeMapController get to => Get.find<DeMapController>();
-  String apiKey = "AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
+  
 
   @override
   void onInit() {
@@ -125,7 +125,7 @@ class DeMapController extends GetxController {
 }
 
 class AppState with ChangeNotifier {
-  String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
+  
   final String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
   final String distanceApi =
       "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Adum&origins=Buokrom&units=imperial&key=AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
