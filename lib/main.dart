@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
       ],
       child: GetMaterialApp(
         debugShowCheckedModeBanner: false,
-        defaultTransition: Transition.upToDown,
+        defaultTransition: Transition.leftToRight,
         theme: ThemeData(
 // This is the theme of your application.
           primarySwatch: Colors.blue,

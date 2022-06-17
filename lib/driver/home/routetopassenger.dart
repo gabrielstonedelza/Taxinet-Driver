@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 
 import '../../states/app_state.dart';
+import 'fab_widget.dart';
 
 class RouteToPassenger extends StatefulWidget {
   String pickUp;
@@ -67,9 +68,10 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    return Scaffold(
-      body: SafeArea(
-        child: SizedBox(
+    return SafeArea(
+      child: Scaffold(
+
+        body: SizedBox(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
           child: GoogleMap(
@@ -90,6 +92,7 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
             polylines: appState.polyLines,
           ),
         ),
+        floatingActionButton: myFabMenu(),
       ),
     );
   }

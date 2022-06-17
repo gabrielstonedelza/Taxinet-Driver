@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:animate_do/animate_do.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
@@ -8,6 +9,9 @@ import 'package:taxinet_driver/states/app_state.dart';
 
 import '../../../constants/app_colors.dart';
 import 'package:get/get.dart';
+
+import '../acceptandrejectride.dart';
+import '../fab_widget.dart';
 
 class Notifications extends StatefulWidget {
   const Notifications({Key? key}) : super(key: key);
@@ -37,6 +41,9 @@ class _NotificationsState extends State<Notifications> {
       var jsonData = const Utf8Decoder().convert(codeUnits);
       allNotifications = json.decode(jsonData);
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -55,40 +62,97 @@ class _NotificationsState extends State<Notifications> {
       });
     }
     getAllNotifications(uToken);
-    _timer = Timer.periodic(const Duration(seconds: 12), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       getAllNotifications(uToken);
     });
 
   }
 
   @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    _timer.cancel();
+  }
+  @override
   Widget build(BuildContext context) {
-    final appState  = Provider.of<AppState>(context);
-    return Scaffold(
-      body: isLoading ? const Center(
-        child: CircularProgressIndicator(
-          strokeWidth: 5,
-          color: primaryColor,
+
+    return SafeArea(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Notifications"),
+          backgroundColor: defaultTextColor2,
         ),
-      ) : ListView.builder(
-        itemCount: allNotifications != null ? allNotifications.length :0,
-          itemBuilder: (context,index){
-          items = allNotifications[index];
-            return Column(
-              children: [
-                const SizedBox(height: 10,),
-                ListTile(
-                  onTap: (){},
-                  leading: const CircleAvatar(
-                      backgroundColor: primaryColor,
-                      foregroundColor: Colors.white,
-                      child: Icon(Icons.notifications)
-                  ),
-                  title: Text(items['notification_title']),
-                )
-              ],
-            );
-          }
+        body: isLoading ? const Center(
+          child: CircularProgressIndicator.adaptive(
+            strokeWidth: 5,
+            backgroundColor: primaryColor,
+          ),
+        ) :ListView.builder(
+          itemCount: allNotifications != null ? allNotifications.length :0,
+            itemBuilder: (context,index){
+            items = allNotifications[index];
+              return Column(
+                children: [
+                  const SizedBox(height: 10,),
+                  SlideInUp(
+                    animate: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 18.0,right: 18.0),
+                      child: Card(
+                        elevation: 10,
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8.0,bottom: 10),
+                          child: items['read'] == "Read" ? ListTile(
+                            onTap: (){
+                              if(items['notification_title'] == "New Ride Request"){
+                                Get.to(()=>AcceptAndRejectRide(
+                                  rideId: items['ride_id'],
+                                  dropOffId:items['drop_off_place_id'],
+                                  dropOff: items['passengers_dropff'],
+                                  pickUpLat: items['passengers_lat'],
+                                  pickUpLng: items['passengers_lng'],
+                                  notificationFrom: items['notification_from'].toString(),
+                                  passenger: items['passenger'],
+                                ));
+                              }
+                            },
+                            leading: const CircleAvatar(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                child: Icon(Icons.notifications)
+                            ),
+                            title: Text(items['notification_title'],style: const TextStyle(color: Colors.grey),),
+                          ) : ListTile(
+                            onTap: (){
+                              if(items['notification_title'] == "New Ride Request"){
+                                  Get.to(()=>AcceptAndRejectRide(
+                                    rideId: items['ride_id'],
+                                    dropOffId:items['drop_off_place_id'],
+                                    dropOff: items['passengers_dropff'],
+                                    pickUpLat: items['passengers_lat'],
+                                    pickUpLng: items['passengers_lng'],
+                                    notificationFrom: items['notification_from'].toString(),
+                                    passenger: items['passenger'],
+                                  ));
+                              }
+                            },
+                            leading: const CircleAvatar(
+                                backgroundColor: primaryColor,
+                                foregroundColor: Colors.white,
+                                child: Icon(Icons.notifications)
+                            ),
+                            title: Text(items['notification_title'],style: const TextStyle(fontWeight: FontWeight.bold),),
+                          ),
+                        ),
+                      ),
+                    ),
+                  )
+                ],
+              );
+            }
+        ),
+        floatingActionButton: myFabMenu(),
       ),
     );
   }

@@ -78,7 +78,7 @@ class DeMapController extends GetxController {
     else {
       locationSettings = const LocationSettings(
         accuracy: LocationAccuracy.high,
-        distanceFilter: 10,
+        distanceFilter: 5,
       );
     }
     streamSubscription = Geolocator.getPositionStream().listen((Position position) {
@@ -125,7 +125,7 @@ class DeMapController extends GetxController {
 }
 
 class AppState with ChangeNotifier {
-  String apiKey = "AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
+  String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
   final String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
   final String distanceApi =
       "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Adum&origins=Buokrom&units=imperial&key=AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
@@ -218,7 +218,6 @@ class AppState with ChangeNotifier {
   List get allYourNots => allNotifications;
 
   AppState() {
-    _getUserLocation();
   }
 
   Future<String> getRouteCoordinates(LatLng startLatLng, LatLng endLatLng) async {
@@ -235,71 +234,6 @@ class AppState with ChangeNotifier {
       deTime = values['routes'][0]['legs'][0]['duration']['text'];
     }
     return points;
-  }
-  Future<String> getRouteCoordinatesWithPlaceIds(String startPlaceID, String endPlaceId) async {
-    var uri = Uri.parse(
-        "$baseUrl?origin=place_id:$startPlaceID&destination=place_id:$endPlaceId&key=$apiKey");
-
-    http.Response response = await http.get(uri);
-    Map values = jsonDecode(response.body);
-    final points = values["routes"][0]["overview_polyline"]["points"];
-    final legs = values['routes'][0]['legs'];
-
-    if (legs != null) {
-      distance = values['routes'][0]['legs'][0]['distance']['text'];
-      deTime = values['routes'][0]['legs'][0]['duration']['text'];
-    }
-    return points;
-  }
-
-  Future<void> _getUserLocation() async {
-    bool serviceEnabled;
-    LocationPermission permission;
-    serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      return Future.error('Location services are disabled.');
-    }
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) {
-        return Future.error('Location permissions are denied');
-      }
-    }
-
-    if (permission == LocationPermission.deniedForever) {
-      return Future.error(
-          'Location permissions are permanently denied, we cannot request permissions.');
-    }
-
-    return await userLocation();
-  }
-
-  Future<void> userLocation() async {
-    try {
-      isLoading = true;
-      List<Placemark> placemark = await placemarkFromCoordinates(userLatitude, userLongitude);
-
-      myLocationName = placemark[2].street!;
-      locationController.text = myLocationName;
-      var url = Uri.parse(
-          "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$myLocationName&inputtype=textquery&key=$apiKey");
-      http.Response response = await http.get(url);
-
-      if (response.statusCode == 200) {
-        var values = jsonDecode(response.body);
-        dPlaceId = values['candidates'][0]['place_id'];
-      }
-    } catch (e) {
-      // Get.snackbar("Sorry 😢", "Your location couldn't be found",
-      //     colorText: defaultTextColor1,
-      //     snackPosition: SnackPosition.TOP,
-      //     backgroundColor: primaryColor);
-    } finally {
-      isLoading = false;
-      notifyListeners();
-    }
   }
 
   void createRoute(String encodedPolyline) {
@@ -367,6 +301,17 @@ class AppState with ChangeNotifier {
     LatLng destination = LatLng(latitude, longitude);
     addMarker(destination, intendedDestination);
     String route = await getRouteCoordinates(_initialPosition!, destination);
+    createRoute(route);
+    notifyListeners();
+  }
+
+  void sendPassengerRouteRequest(String intendedDestination,LatLng passengersLatLng) async {
+    List<Location> locations = await locationFromAddress(intendedDestination);
+    double latitude = locations[0].latitude;
+    double longitude = locations[0].longitude;
+    LatLng destination = LatLng(latitude, longitude);
+    addMarker(destination, intendedDestination);
+    String route = await getRouteCoordinates(passengersLatLng, destination);
     createRoute(route);
     notifyListeners();
   }
@@ -478,35 +423,35 @@ class AppState with ChangeNotifier {
     }
   }
 
-  // Future<void> fetchRideDetail(int id, String uToken) async {
-  //   try {
-  //     isLoading = true;
-  //     final detailRideUrl = "https://taxinetghana.xyz/ride_requests/$id";
-  //     final myLink = Uri.parse(detailRideUrl);
-  //     http.Response response = await http.get(myLink, headers: {
-  //       "Content-Type": "application/x-www-form-urlencoded",
-  //       "Authorization": "Token $uToken"
-  //     });
-  //     if (response.statusCode == 200) {
-  //       final codeUnits = response.body;
-  //       var jsonData = jsonDecode(codeUnits);
-  //
-  //       passenger = jsonData['passengers_username'];
-  //       pickUp = jsonData['pick_up'];
-  //       dropOff = jsonData['drop_off'];
-  //       price = jsonData['price'];
-  //       dateRequested = jsonData['date_requested'];
-  //       passengerProfilePic = jsonData['get_passenger_profile_pic'];
-  //       notifyListeners();
-  //     } else {
-  //       Get.snackbar("Sorry", "please check your internet connection");
-  //     }
-  //   } catch (e) {
-  //     Get.snackbar("Sorry", "please check your internet connection");
-  //   } finally {
-  //     isLoading = false;
-  //   }
-  // }
+  Future<void> fetchRideDetail(int id, String uToken) async {
+    try {
+      isLoading = true;
+      final detailRideUrl = "https://taxinetghana.xyz/ride_requests/$id";
+      final myLink = Uri.parse(detailRideUrl);
+      http.Response response = await http.get(myLink, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        final codeUnits = response.body;
+        var jsonData = jsonDecode(codeUnits);
+
+        passenger = jsonData['passengers_username'];
+        pickUp = jsonData['pick_up'];
+        dropOff = jsonData['drop_off'];
+        price = jsonData['price'];
+        dateRequested = jsonData['date_requested'];
+        passengerProfilePic = jsonData['get_passenger_profile_pic'];
+        notifyListeners();
+      } else {
+        Get.snackbar("Sorry", "please check your internet connection");
+      }
+    } catch (e) {
+      Get.snackbar("Sorry", "please check your internet connection");
+    } finally {
+      isLoading = false;
+    }
+  }
 
   sendLocation(String token) async {
     const addLocationUrl = "https://taxinetghana.xyz/drivers_location/new/";
@@ -647,7 +592,9 @@ class AppState with ChangeNotifier {
         notifyListeners();
       }
     }
-    catch(e){}
+    catch(e){
+
+    }
     finally{
       isLoading = false;
     }

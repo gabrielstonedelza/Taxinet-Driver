@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:taxinet_driver/g_controllers/login/my_login_controller.dart';
 import '../../constants/app_colors.dart';
@@ -37,7 +38,8 @@ class _LoginViewState extends State<LoginView> {
       body: ListView(
         children: [
           const SizedBox(height: 20,),
-          Image.asset("assets/images/taxinet_new.png",height: 250,),
+          Image.asset("assets/images/taxinet_new.png",width: 350,height: 350,),
+          
           Padding(
             padding: const EdgeInsets.all(18.0),
             child: Form(

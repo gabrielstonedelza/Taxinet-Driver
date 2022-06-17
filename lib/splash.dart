@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:provider/provider.dart';
 import 'package:taxinet_driver/controllers/login/login_controller.dart';
+import 'package:taxinet_driver/driver/home/d_home.dart';
 import 'package:taxinet_driver/views/login/loginview.dart';
 import 'driver/home/driver_home.dart';
 
@@ -35,7 +36,7 @@ class _SplashScreenState extends State<SplashScreen> {
     loginState.getAllDrivers();
     if (hasToken && storage.read("userType") == "Driver") {
       Timer(const Duration(seconds: 7),
-          () => Get.offAll(() => const DriverHome()));
+          () => Get.offAll(() => const NewDriverHome()));
     } else {
       Timer(const Duration(seconds: 7),
           () => Get.offAll(() => const LoginView()));

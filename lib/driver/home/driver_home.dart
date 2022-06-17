@@ -149,11 +149,6 @@ class _DriverHomeState extends State<DriverHome>
     getAllTriggeredNotifications(uToken);
 
     final appState = Provider.of<AppState>(context, listen: false);
-    setState(() {
-      appState.sendLocation(uToken);
-      locationUpdated = true;
-      locationDeleted = false;
-    });
 
       _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
         appState.deleteDriversLocations(uToken);
@@ -181,22 +176,18 @@ class _DriverHomeState extends State<DriverHome>
               pickUpLng: i['passengers_lng'],
               dropOffId: i['drop_off_place_id'],
               dropOff: i['passengers_dropff'],
-              rideDuration: i['ride_duration'],
-              rideDistance: i['ride_distance'],
-              pickUp: i['passengers_pickup'],
+              passenger:i['passenger'],
+              //
+              // pickUp: i['passengers_pickup'],
               notificationFrom: i['notification_from'].toString(),
-              notificationTo: i['notification_to'].toString(),
+              // notificationTo: i['notification_to'].toString(),
               rideId: i['ride_id'],
-              passPickUpId: i['pick_up_place_id']));
+              // passPickUpId: i['pick_up_place_id']
+          ));
           updateReadNotification(i['id']);
           updateDriveBookedStatus(
               i['ride_id'].toString(), i['notification_to'].toString());
         }
-        // if(i['notification_title'] == "New bid on price" && i['read'] == "Not Read"){
-        //   Get.to(() => BidPrice(rideId: i['ride_id']));
-        //   updateReadNotification(i['id']);
-        //   // updateDriveBookedStatus(i['ride_id']);
-        // }
       }
     });
 

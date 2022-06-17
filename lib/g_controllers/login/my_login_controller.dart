@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:taxinet_driver/driver/home/d_home.dart';
 
 import '../../driver/home/driver_home.dart';
 import '../../views/login/loginview.dart';
@@ -70,7 +71,7 @@ class MyLoginController extends GetxController{
       update();
       if (driversUserNames.contains(uname)) {
         Timer(const Duration(seconds: 5), () =>
-            Get.offAll(() => const DriverHome()));
+            Get.offAll(() => const NewDriverHome()));
       }
       else {
         Get.snackbar(

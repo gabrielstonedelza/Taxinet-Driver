@@ -5,7 +5,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:taxinet_driver/driver/home/bidpage.dart';
@@ -13,46 +12,45 @@ import 'package:taxinet_driver/driver/home/bidpage.dart';
 import '../../constants/app_colors.dart';
 import '../../states/app_state.dart';
 import 'driver_home.dart';
+import 'fab_widget.dart';
 
 class AcceptAndRejectRide extends StatefulWidget {
-  String pickUpLat;
-  String pickUp;
-  String pickUpLng;
+  String rideId;
   String dropOffId;
   String dropOff;
-  String rideDuration;
-  String rideDistance;
+  String pickUpLat;
+  String pickUpLng;
   String notificationFrom;
-  String notificationTo;
-  String rideId;
-  String passPickUpId;
+  String passenger;
 
-  AcceptAndRejectRide({Key? key,required this.pickUpLat,required this.pickUp,required this.pickUpLng,required this.dropOffId,required this.dropOff,required this.rideDuration,required this.rideDistance,required this.notificationFrom,required this.notificationTo,required this.rideId, required this.passPickUpId}) : super(key: key);
+  AcceptAndRejectRide({Key? key,required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passenger}) : super(key: key);
 
   @override
-  State<AcceptAndRejectRide> createState() => _AcceptAndRejectRideState(pickUpLat:this.pickUpLat,pickUp:this.pickUp,pickUpLng:this.pickUpLng,dropOffId:this.dropOffId,dropOff:this.dropOff,rideDuration:this.rideDuration,rideDistance:this.rideDistance,notificationFrom:this.notificationFrom,notificationTo:this.notificationTo,rideId: this.rideId, passPickUpId:this.passPickUpId);
+  State<AcceptAndRejectRide> createState() => _AcceptAndRejectRideState(rideId: this.rideId,dropOffId:this.dropOffId,dropOff:this.dropOff ,pickUpLat:this.pickUpLat,pickUpLng:this.pickUpLng,notificationFrom: this.notificationFrom,passenger: this.passenger);
 }
 
 class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
-  String pickUpLat;
-  String pickUp;
-  String pickUpLng;
+  String rideId;
   String dropOffId;
   String dropOff;
-  String rideDuration;
-  String rideDistance;
+  String pickUpLat;
+  String pickUpLng;
   String notificationFrom;
-  String notificationTo;
-  String rideId;
-  String passPickUpId;
+  String passenger;
+  _AcceptAndRejectRideState({required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passenger});
 
-  var uToken = "";
+  var uToken;
   final storage = GetStorage();
   var username = "";
+  bool isLoading = true;
 
-  _AcceptAndRejectRideState({required this.pickUpLat,required this.pickUp,required this.pickUpLng, required this.dropOffId,required this.dropOff,required this.rideDuration,required this.rideDistance,required this.notificationFrom,required this.notificationTo,required this.rideId, required this.passPickUpId});
   final Completer<GoogleMapController> _mapController = Completer();
   final deMapController = DeMapController.to;
+  late String pickUp = "";
+  late String driver = "";
+  late String passPickUpId = "";
+  late String passengersPic = "";
+  late String passengersUsername = "";
 
   addToRejectedRides() async {
     const bidUrl = "https://taxinetghana.xyz/add_to_rejected_rides/";
@@ -62,7 +60,7 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
       "Authorization": "Token $uToken"
     }, body: {
       "ride": rideId,
-      "driver": notificationTo,
+      "driver": driver,
     });
     if (response.statusCode == 201) {
     } else {}
@@ -76,10 +74,42 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
       "Authorization": "Token $uToken"
     }, body: {
       "ride": rideId,
-      "driver": notificationTo,
+      "driver": driver,
     });
     if (response.statusCode == 201) {
     } else {}
+  }
+
+  Future<void> fetchRideDetail() async {
+    try {
+      final detailRideUrl = "https://taxinetghana.xyz/ride_requests/$rideId";
+      final myLink = Uri.parse(detailRideUrl);
+      http.Response response = await http.get(myLink, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $uToken"
+      });
+      if (response.statusCode == 200) {
+        final codeUnits = response.body;
+        var jsonData = jsonDecode(codeUnits);
+        setState(() {
+          pickUp = jsonData['pick_up'];
+          driver = jsonData['driver'];
+          passPickUpId = jsonData['passengers_pick_up_place_id'];
+          passengersPic = jsonData['get_passenger_profile_pic'];
+          passengersUsername = jsonData['passengers_username'];
+        });
+
+        print(passengersPic);
+      } else {
+        print(response.body);
+        Get.snackbar("Sorry", "please check your internet connection");
+      }
+      setState(() {
+        isLoading = false;
+      });
+    } catch (e) {
+      Get.snackbar("Sorry", "please check your internet connection");
+    }
   }
 
 
@@ -96,10 +126,12 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
     deMapController.getCurrentLocation().listen((position) {
       centerScreen(position);
     });
-
+    fetchRideDetail();
     final appState = Provider.of<AppState>(context, listen: false);
-    appState.sendRequest(dropOff);
+    // appState.sendRequest(dropOff);
+    appState.sendPassengerRouteRequest(dropOff,LatLng(double.parse(pickUpLat), double.parse(pickUpLng)));
     appState.setSelectedLocation(dropOffId);
+
   }
 
   @override
@@ -111,219 +143,235 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
   @override
   Widget build(BuildContext context) {
     final appState = Provider.of<AppState>(context);
-    return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              flex: 2,
-              child: SizedBox(
-                height: MediaQuery.of(context).size.height / 1.5,
-                width: MediaQuery.of(context).size.width,
-                child: GoogleMap(
-                  initialCameraPosition: CameraPosition(
-                      target: LatLng(double.parse(pickUpLat),double.parse(pickUpLng)), zoom:11.5),
-                  myLocationButtonEnabled: false,
-                  zoomControlsEnabled: false,
-                  mapType: MapType.normal,
-                  trafficEnabled: true,
-                  onMapCreated: (GoogleMapController controller) {
-                    _mapController.complete(controller);
-                    controller.setMapStyle(Utils.mapStyle);
-                  },
-                  myLocationEnabled: true,
-                  compassEnabled: true,
-                  markers: appState.markers,
-                  onCameraMove: appState.onCameraMove,
-                  polylines: appState.polyLines,
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: Colors.grey
-                ),
-                child: Column(
-                  children: [
-                    const SizedBox(height: 20,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(right: 18.0),
-                            child: Text(rideDuration,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1),),
-                          ),
-
-                          Padding(
-                            padding: const EdgeInsets.only(left: 18.0),
-                            child: Text(rideDistance,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1),),
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(right: 18.0),
-                            child: Text("Pick Up : ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 10.0),
-                            child: Text(pickUp,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1),),
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 20,),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 18.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          const Padding(
-                            padding: EdgeInsets.only(right: 18.0),
-                            child: Text("Drop Off : ",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1)),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(left: 9.0),
-                            child: Text(dropOff,style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 15,color: defaultTextColor1),),
-                          )
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 30,),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 18.0,right: 18.0),
-                            child: RawMaterialButton(
-                              onPressed: () {
-                                addToAcceptedRides();
-                                Get.to(()=> BidPrice(rideId:rideId,driver:notificationTo, pickUp: pickUp,passPickUpId: passPickUpId,passengersLat:pickUpLat,passengersLng:pickUpLng));
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      12)),
-                              elevation: 8,
-                              child: const Padding(
-                                padding:
-                                EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Accept",
-                                  style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 15,
-                                      color:
-                                      defaultTextColor1),
-                                ),
-                              ),
-                              fillColor: primaryColor,
-                              splashColor: defaultColor,
-                            ),
-                          ),
-                          flex: 1,
+    return SafeArea(
+      child: Scaffold(
+        body:
+        SingleChildScrollView(
+          child: Column(
+            children: [
+              Stack(
+                children: [
+                  Consumer<AppState>(builder: (context,appState,child){
+                    return
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height,
+                        width: MediaQuery.of(context).size.width,
+                        child: GoogleMap(
+                          initialCameraPosition: CameraPosition(
+                              target: LatLng(double.parse(pickUpLat),double.parse(pickUpLng)), zoom:11.5),
+                          myLocationButtonEnabled: false,
+                          zoomControlsEnabled: false,
+                          mapType: MapType.normal,
+                          trafficEnabled: true,
+                          onMapCreated: (GoogleMapController controller) {
+                            _mapController.complete(controller);
+                            controller.setMapStyle(Utils.mapStyle);
+                          },
+                          myLocationEnabled: true,
+                          compassEnabled: true,
+                          markers: appState.markers,
+                          onCameraMove: appState.onCameraMove,
+                          polylines: appState.polyLines,
                         ),
-
-                        Expanded(
-                          flex: 1,
+                      );
+                  },),
+                  Positioned(
+                    height: 300,
+                      left: 15,
+                      right: 15,
+                      bottom: 20,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(20),
+                        child: Card(
+                          color: Colors.grey.shade50,
+                          elevation: 12,
                           child: Padding(
-                            padding: const EdgeInsets.only(left: 18.0,right: 18.0),
-                            child: RawMaterialButton(
-                              onPressed: () {
-                                Get.defaultDialog(
-                                  title: "Confirm Cancel",
-                                  middleText: "Are you sure you want to cancel ride?",
-                                  titleStyle: TextStyle(),
-                                  barrierDismissible: false,
-                                  cancel: RawMaterialButton(
-                                    onPressed: () {
-                                      Get.back();
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12)),
-                                    elevation: 8,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "No",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                            color: defaultTextColor1),
+                            padding: const EdgeInsets.all(18.0),
+                            child: Column(
+                              children: [
+                                Row(
+                                  children: [
+                                    // CircleAvatar(
+                                    //   backgroundImage: NetworkImage(passengersPic),
+                                    //   radius: 30,
+                                    // ),
+                                    Text(passenger),
+                                    Consumer<AppState>(builder: (context,appState,child){
+                                      return Text(appState.deTime);
+                                    },)
+                                  ],
+                                ),
+                                const SizedBox(height: 10,),
+                                const Divider(),
+                                const SizedBox(height: 10,),
+                                Row(
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.only(right: 8.0),
+                                      child: Image.asset("assets/images/rec.png",width: 15,height: 15,),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.only(left: 18.0),
+                                      child: Text(pickUp),
+                                    )
+                                  ],
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.start,
+                                    children: [
+                                      Image.asset("assets/images/vertical-ellipsis.png",width: 15,height: 15,color: Colors.grey,),
+                                    ],
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 8.0),
+                                  child: Row(
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 8.0),
+                                        child: Image.asset("assets/images/rec-2.png",width: 15,height: 15,),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 18.0),
+                                        child: Text(dropOff),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(height: 10,),
+                                const Divider(),
+                                const SizedBox(height: 10,),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 18.0,right: 18.0),
+                                        child: RawMaterialButton(
+                                          onPressed: () {
+                                            addToAcceptedRides();
+                                            Get.to(()=> BidPrice(rideId:rideId,driver:driver, pickUp: pickUp,passPickUpId: passPickUpId,passengersLat:pickUpLat,passengersLng:pickUpLng,passenger:passenger));
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(
+                                                  12)),
+                                          elevation: 8,
+                                          child: const Padding(
+                                            padding:
+                                            EdgeInsets.all(8.0),
+                                            child: Text(
+                                              "Accept",
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontSize: 15,
+                                                  color:
+                                                  defaultTextColor1),
+                                            ),
+                                          ),
+                                          fillColor: primaryColor,
+                                          splashColor: defaultColor,
+                                        ),
+                                      ),
+                                      flex: 1,
+                                    ),
+                                    Expanded(
+                                      flex: 1,
+                                      child: Padding(
+                                        padding: const EdgeInsets.only(left: 18.0,right: 18.0),
+                                        child: RawMaterialButton(
+                                          onPressed: () {
+                                            Get.defaultDialog(
+                                              title: "Confirm Cancel",
+                                              middleText: "Are you sure you want to cancel ride?",
+                                              barrierDismissible: false,
+                                              cancel: RawMaterialButton(
+                                                onPressed: () {
+                                                  Get.back();
+                                                },
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12)),
+                                                elevation: 8,
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    "No",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15,
+                                                        color: defaultTextColor1),
+                                                  ),
+                                                ),
+                                                fillColor: Colors.red,
+                                                splashColor: defaultColor,
+                                              ),
+                                              confirm: RawMaterialButton(
+                                                onPressed: () {
+                                                  appState.driverAcceptRideAndUpdateStatus(uToken, rideId,driver);
+                                                  addToRejectedRides();
+                                                  appState.polyLines.clear();
+                                                  appState.markers.clear();
+                                                  Get.offAll(() => const DriverHome());
+                                                },
+                                                shape: RoundedRectangleBorder(
+                                                    borderRadius: BorderRadius.circular(12)),
+                                                elevation: 8,
+                                                child: const Padding(
+                                                  padding: EdgeInsets.all(8.0),
+                                                  child: Text(
+                                                    "Yes",
+                                                    style: TextStyle(
+                                                        fontWeight: FontWeight.bold,
+                                                        fontSize: 15,
+                                                        color: defaultTextColor1),
+                                                  ),
+                                                ),
+                                                fillColor: primaryColor,
+                                                splashColor: defaultColor,
+                                              ),
+                                            );
+                                          },
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                              BorderRadius.circular(
+                                                  12)),
+                                          elevation: 8,
+                                          child: const Padding(
+                                            padding:
+                                            EdgeInsets.all(8.0),
+                                            child: Text(
+                                              "Decline",
+                                              style: TextStyle(
+                                                  fontWeight:
+                                                  FontWeight.bold,
+                                                  fontSize: 15,
+                                                  color:
+                                                  defaultTextColor1),
+                                            ),
+                                          ),
+                                          fillColor: Colors.red,
+                                          splashColor: defaultColor,
+                                        ),
                                       ),
                                     ),
-                                    fillColor: Colors.red,
-                                    splashColor: defaultColor,
-                                  ),
-                                  confirm: RawMaterialButton(
-                                    onPressed: () {
-                                      appState.driverAcceptRideAndUpdateStatus(uToken, rideId,notificationTo);
-                                      addToRejectedRides();
-                                      appState.polyLines.clear();
-                                      appState.markers.clear();
-                                      Get.offAll(() => const DriverHome());
-                                    },
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12)),
-                                    elevation: 8,
-                                    child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: Text(
-                                        "Yes",
-                                        style: TextStyle(
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 15,
-                                            color: defaultTextColor1),
-                                      ),
-                                    ),
-                                    fillColor: primaryColor,
-                                    splashColor: defaultColor,
-                                  ),
-                                );
-                              },
-                              shape: RoundedRectangleBorder(
-                                  borderRadius:
-                                  BorderRadius.circular(
-                                      12)),
-                              elevation: 8,
-                              child: const Padding(
-                                padding:
-                                EdgeInsets.all(8.0),
-                                child: Text(
-                                  "Decline",
-                                  style: TextStyle(
-                                      fontWeight:
-                                      FontWeight.bold,
-                                      fontSize: 15,
-                                      color:
-                                      defaultTextColor1),
-                                ),
-                              ),
-                              fillColor: Colors.red,
-                              splashColor: defaultColor,
+                                  ],
+                                )
+                              ],
+
                             ),
                           ),
                         ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            )
-          ],
+                      )
+                  )
+                ],
+              )
+            ],
+          ),
         ),
+        floatingActionButton: myFabMenu(),
       ),
     );
   }
