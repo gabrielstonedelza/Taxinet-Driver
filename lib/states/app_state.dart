@@ -25,7 +25,11 @@ class DeMapController extends GetxController {
   bool isLoading = true;
   static DeMapController get to => Get.find<DeMapController>();
 <<<<<<< HEAD
+<<<<<<< HEAD
   String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
+=======
+  
+>>>>>>> a5a0e818a9d13002c3e1fe7bf41bf5753ec06905
 =======
   
 >>>>>>> a5a0e818a9d13002c3e1fe7bf41bf5753ec06905
