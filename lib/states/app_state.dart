@@ -24,7 +24,7 @@ late String dPlaceId = "";
 class DeMapController extends GetxController {
   bool isLoading = true;
   static DeMapController get to => Get.find<DeMapController>();
-  String apiKey = "AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
+  String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
 
   @override
   void onInit() {
@@ -94,22 +94,19 @@ class DeMapController extends GetxController {
   Future<void> userLocation() async {
     try {
       isLoading = true;
-      List<Placemark> placemark = await placemarkFromCoordinates(userLatitude, userLongitude);
+      if(userLongitude != 0.0 && userLongitude != 0.0){
+        List<Placemark> placemark = await placemarkFromCoordinates(userLatitude, userLongitude);
 
-      myLocationName = placemark[2].street!;
-      var url = Uri.parse(
-          "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$myLocationName&inputtype=textquery&key=$apiKey");
-      http.Response response = await http.get(url);
+        myLocationName = placemark[2].street!;
+        var url = Uri.parse(
+            "https://maps.googleapis.com/maps/api/place/findplacefromtext/json?input=$myLocationName&inputtype=textquery&key=$apiKey");
+        http.Response response = await http.get(url);
 
-      if (response.statusCode == 200) {
-        var values = jsonDecode(response.body);
-        dPlaceId = values['candidates'][0]['place_id'];
+        if (response.statusCode == 200) {
+          var values = jsonDecode(response.body);
+          dPlaceId = values['candidates'][0]['place_id'];
+        }
       }
-    } catch (e) {
-      // Get.snackbar("Sorry 😢", "Your location couldn't be found",
-      //     colorText: defaultTextColor1,
-      //     snackPosition: SnackPosition.TOP,
-      //     backgroundColor: primaryColor);
     } finally {
       isLoading = false;
     }
@@ -127,8 +124,6 @@ class DeMapController extends GetxController {
 class AppState with ChangeNotifier {
   String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
   final String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
-  final String distanceApi =
-      "https://maps.googleapis.com/maps/api/distancematrix/json?destinations=Adum&origins=Buokrom&units=imperial&key=AIzaSyCNrE7Zbx75Y63T5PcPuio7-yIYDgMPSc8";
 
   late double lat = userLatitude;
   late double lng = userLongitude;
@@ -151,7 +146,6 @@ class AppState with ChangeNotifier {
   String searchDestination = "";
   String searchPlaceId = "";
   bool hasDestination = false;
-  String myLocationName = "";
   String get getMyLocationName => myLocationName;
   late List driversLocationMinutes = [];
   List get allDriversLocationMinutes => driversLocationMinutes;
@@ -189,7 +183,7 @@ class AppState with ChangeNotifier {
   static LatLng? _lat;
   static LatLng? _lng;
   static LatLng? _dLocation;
-  late String dPlaceId = "";
+  // late String dPlaceId = "";
   String get driversPassengersPlaceId => dPlaceId;
 
   //getters for detail ride
@@ -217,8 +211,7 @@ class AppState with ChangeNotifier {
   List get yourNots => yourNotifications;
   List get allYourNots => allNotifications;
 
-  AppState() {
-  }
+  AppState();
 
   Future<String> getRouteCoordinates(LatLng startLatLng, LatLng endLatLng) async {
     var uri = Uri.parse(
@@ -244,14 +237,17 @@ class AppState with ChangeNotifier {
         points: _convertToLatLng(_decodePoly(encodedPolyline))));
     notifyListeners();
   }
+  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
 
-  void addMarker(LatLng location, String address) {
-    _markers.add(Marker(
+  void addMarker(LatLng location, String address,) {
+    _markers.add(
+        Marker(
       markerId: MarkerId(_lastPosition.toString()),
       position: location,
       infoWindow: InfoWindow(title: address, snippet: "Go Here"),
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueMagenta),
-    ));
+      icon: sourceIcon,
+    ),
+    );
     notifyListeners();
   }
 
@@ -310,9 +306,9 @@ class AppState with ChangeNotifier {
     double latitude = locations[0].latitude;
     double longitude = locations[0].longitude;
     LatLng destination = LatLng(latitude, longitude);
-    addMarker(destination, intendedDestination);
+    // addMarker(destination, intendedDestination);
     String route = await getRouteCoordinates(passengersLatLng, destination);
-    createRoute(route);
+    // createRoute(route);
     notifyListeners();
   }
 
@@ -466,13 +462,7 @@ class AppState with ChangeNotifier {
       "drivers_lng": userLongitude.toString(),
     });
     if (response.statusCode == 201) {
-      // Get.snackbar(
-      //     "Hurray,🙂", "You are live",
-      //     colorText: Colors.white,
-      //     snackPosition: SnackPosition.TOP,
-      //     duration: const Duration(seconds: 5),
-      //     backgroundColor: snackColor
-      // );
+
     }
   }
 

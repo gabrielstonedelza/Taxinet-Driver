@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -12,30 +13,70 @@ import 'fab_widget.dart';
 class RouteToPassenger extends StatefulWidget {
   String pickUp;
   String passPickUpId;
+  String pickUpLat;
+  String pickUpLng;
+  String drop_off_lat;
+  String drop_off_lng;
 
-  RouteToPassenger({Key? key,required this.pickUp, required this.passPickUpId}) : super(key: key);
+  RouteToPassenger({Key? key,required this.pickUp, required this.passPickUpId,required this.pickUpLat,required this.pickUpLng,required this.drop_off_lat,required this.drop_off_lng}) : super(key: key);
 
   @override
-  State<RouteToPassenger> createState() => _RouteToPassengerState(pickUp:this.pickUp, passPickUpId:this.passPickUpId);
+  State<RouteToPassenger> createState() => _RouteToPassengerState(pickUp:this.pickUp, passPickUpId:this.passPickUpId,pickUpLat:this.pickUpLat,pickUpLng:this.pickUpLng,drop_off_lat:this.drop_off_lat,drop_off_lng:this.drop_off_lng);
 }
 
 class _RouteToPassengerState extends State<RouteToPassenger> {
   String pickUp;
   String passPickUpId;
+  String pickUpLat;
+  String pickUpLng;
+  String drop_off_lat;
+  String drop_off_lng;
+  _RouteToPassengerState({required this.pickUp, required this.passPickUpId,required this.pickUpLat,required this.pickUpLng,required this.drop_off_lat,required this.drop_off_lng});
   var uToken = "";
   final storage = GetStorage();
   var username = "";
   late Timer _timer;
+  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
+  List<LatLng> polylineCoordinates = [];
 
-  _RouteToPassengerState({required this.pickUp, required this.passPickUpId});
+
   final Completer<GoogleMapController> _mapController = Completer();
   final deMapController = DeMapController.to;
+  void setCustomMarkerIcon()async{
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/cab_for_map.png").then((icon){
+      sourceIcon = icon;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/location-pin_1.png",).then((icon){
+      destinationIcon = icon;
+    });
+  }
+  void getPolyPoints(double driversLat,double driversLng) async{
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I",
+      PointLatLng(driversLat, driversLng),
+      PointLatLng(double.parse(pickUpLat), double.parse(pickUpLng)),
+    );
+
+    if(result.points.isNotEmpty){
+      for (var point in result.points) {
+        polylineCoordinates.add(
+            LatLng(point.latitude,point.longitude)
+        );
+      }
+      setState(() {});
+    }
+  }
 
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    final appState = Provider.of<AppState>(context, listen: false);
+    setCustomMarkerIcon();
+    getPolyPoints(appState.lat,appState.lng);
     if (storage.read("userToken") != null) {
       uToken = storage.read("userToken");
     }
@@ -45,18 +86,13 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
     deMapController.getCurrentLocation().listen((position) {
       centerScreen(position);
     });
-    final appState = Provider.of<AppState>(context, listen: false);
-    appState.sendRequest(pickUp);
+
+    appState.sendPassengerRouteRequest(pickUp,LatLng(double.parse(pickUpLat), double.parse(pickUpLng)));
     appState.setSelectedLocation(passPickUpId);
     _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
-      appState.sendRequest(pickUp);
+      appState.sendPassengerRouteRequest(pickUp,LatLng(double.parse(pickUpLat), double.parse(pickUpLng)));
       appState.setSelectedLocation(passPickUpId);
     });
-    // print(appState.initialPosition);
-    // print(pickUp);
-    // if(appState.initialPosition == pickUp){
-    //   print("you have reached your destination");
-    // }
   }
 
   @override
@@ -85,11 +121,29 @@ class _RouteToPassengerState extends State<RouteToPassenger> {
               _mapController.complete(controller);
               controller.setMapStyle(Utils.mapStyle);
             },
-            myLocationEnabled: true,
+            // myLocationEnabled: true,
             compassEnabled: true,
-            markers: appState.markers,
+            markers:{
+              Marker(
+                markerId: const MarkerId("Source"),
+                position: LatLng(appState.lat, appState.lng),
+                icon: sourceIcon,
+              ),
+              Marker(
+                  markerId: const MarkerId("Destination"),
+                  position: LatLng(double.parse(pickUpLat), double.parse(pickUpLng)),
+                  icon: destinationIcon
+              ),
+            },
             onCameraMove: appState.onCameraMove,
-            polylines: appState.polyLines,
+            polylines: {
+              Polyline(
+                  polylineId:const PolylineId("route"),
+                  points: polylineCoordinates,
+                  color: Colors.green,
+                  width: 5
+              ),
+            },
           ),
         ),
         floatingActionButton: myFabMenu(),

@@ -45,6 +45,7 @@ dependencies:
   flip_card:
   fab_circular_menu:
   animate_do: ^2.1.0
+  font_awesome_flutter: ^10.1.0
 
 dev_dependencies:
   flutter_test:

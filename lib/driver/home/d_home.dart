@@ -26,6 +26,7 @@ class _NewDriverHomeState extends State<NewDriverHome> {
   final Completer<GoogleMapController> _mapController = Completer();
   final deMapController = DeMapController.to;
   final GlobalKey<FabCircularMenuState> fabKey = GlobalKey();
+  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
 
   var uToken = "";
   final storage = GetStorage();
@@ -123,6 +124,11 @@ class _NewDriverHomeState extends State<NewDriverHome> {
     });
     if (response.statusCode == 200) {}
   }
+  void setCustomMarkerIcon() async{
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/cab_for_map.png").then((icon){
+      sourceIcon = icon;
+    });
+  }
 
 
   @override
@@ -132,6 +138,7 @@ class _NewDriverHomeState extends State<NewDriverHome> {
     deMapController.getCurrentLocation().listen((position) {
       centerScreen(position);
     });
+    setCustomMarkerIcon();
 
     if (storage.read("userToken") != null) {
       uToken = storage.read("userToken");
@@ -152,7 +159,7 @@ class _NewDriverHomeState extends State<NewDriverHome> {
       // Get.snackbar("Delete Alert", "Location is being updated",backgroundColor: Colors.red);
     });
 
-    _timer = Timer.periodic(const Duration(seconds: 15), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       if(status){
         appState.sendLocation(uToken);
       }
@@ -173,11 +180,17 @@ class _NewDriverHomeState extends State<NewDriverHome> {
           Get.to(() => AcceptAndRejectRide(
             rideId: i['ride_id'],
             dropOffId:i['drop_off_place_id'],
-            dropOff: i['passengers_dropff'],
+            dropOff: i['passengers_dropOff'],
             pickUpLat: i['passengers_lat'],
             pickUpLng: i['passengers_lng'],
             notificationFrom: i['notification_from'].toString(),
-            passenger:i['passenger']
+            notificationFromPic:i['get_notification_from_profile_pic'],
+            pickUp:i['passengers_pickup'],
+            notificationTo:i['notification_to'].toString(),
+            passengersPickUpId:i['pick_up_place_id'],
+            passengersUsername:i['passengers_username'],
+            drop_off_lat:i['drop_off_lat'],
+            drop_off_lng:i['drop_off_lng'],
           ));
           updateReadNotification(i['id']);
           updateDriveBookedStatus(
@@ -225,11 +238,16 @@ class _NewDriverHomeState extends State<NewDriverHome> {
                           _mapController.complete(controller);
                           controller.setMapStyle(Utils.mapStyle);
                         },
-                        myLocationEnabled: true,
+                        // myLocationEnabled: true,
                         compassEnabled: true,
-                        markers: appState.markers,
+                        markers: {
+                          Marker(
+                            markerId: const MarkerId("Source"),
+                            position: appState.initialPosition,
+                            icon: sourceIcon,
+                          ),
+                        },
                         onCameraMove: appState.onCameraMove,
-                        polylines: appState.polyLines,
                       ),
                     );
                   }),

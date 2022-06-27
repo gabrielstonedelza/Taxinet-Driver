@@ -113,7 +113,13 @@ class _NotificationsState extends State<Notifications> {
                                   pickUpLat: items['passengers_lat'],
                                   pickUpLng: items['passengers_lng'],
                                   notificationFrom: items['notification_from'].toString(),
-                                  passenger: items['passenger'],
+                                  passengersUsername: items['passengers_username'],
+                                  notificationFromPic:items['get_notification_from_profile_pic'],
+                                    pickUp:items['passengers_pickup'],
+                                    notificationTo:items['notification_to'].toString(),
+                                    passengersPickUpId:items['pick_up_place_id'],
+                                  drop_off_lat:items['drop_off_lat'],
+                                  drop_off_lng:items['drop_off_lng'],
                                 ));
                               }
                             },
@@ -133,7 +139,13 @@ class _NotificationsState extends State<Notifications> {
                                     pickUpLat: items['passengers_lat'],
                                     pickUpLng: items['passengers_lng'],
                                     notificationFrom: items['notification_from'].toString(),
-                                    passenger: items['passenger'],
+                                    passengersUsername: items['passengers_username'],
+                                    notificationFromPic:items['get_notification_from_profile_pic'],
+                                      pickUp:items['passengers_pickup'],
+                                      notificationTo:items['notification_to'].toString(),
+                                      passengersPickUpId:items['pick_up_place_id'],
+                                    drop_off_lat:items['drop_off_lat'],
+                                    drop_off_lng:items['drop_off_lng'],
                                   ));
                               }
                             },

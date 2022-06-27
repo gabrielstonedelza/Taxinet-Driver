@@ -5,8 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:taxinet_driver/driver/home/d_home.dart';
-
-import '../../driver/home/driver_home.dart';
+import '../../constants/app_colors.dart';
 import '../../views/login/loginview.dart';
 
 class MyLoginController extends GetxController{
@@ -69,18 +68,32 @@ class MyLoginController extends GetxController{
       storage.write("userType", "Driver");
       username = uname;
       update();
+      Get.defaultDialog(
+          title: "",
+          radius: 20,
+          backgroundColor: Colors.black54,
+          barrierDismissible: false,
+          content: Row(
+            children: const [
+              Expanded(child: Center(child: CircularProgressIndicator.adaptive(
+                strokeWidth: 5,
+                backgroundColor: primaryColor,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
+              ))),
+              Expanded(child: Text("Processing",style: TextStyle(color: Colors.white),))
+            ],
+          )
+      );
       if (driversUserNames.contains(uname)) {
         Timer(const Duration(seconds: 5), () =>
             Get.offAll(() => const NewDriverHome()));
       }
       else {
-        Get.snackbar(
-            "Error 😢", "You are not a driver or invalid credentials provided",
-            colorText: Colors.white,
+        Get.snackbar("Sorry 😢", response.body,
+            duration: const Duration(seconds: 5),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
-            duration: const Duration(seconds: 5)
-        );
+            colorText: defaultTextColor1);
         Get.offAll(() => const LoginView());
       }
     }

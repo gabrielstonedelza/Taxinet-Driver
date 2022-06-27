@@ -7,7 +7,6 @@ import 'package:provider/provider.dart';
 import 'package:taxinet_driver/controllers/login/login_controller.dart';
 import 'package:taxinet_driver/driver/home/d_home.dart';
 import 'package:taxinet_driver/views/login/loginview.dart';
-import 'driver/home/driver_home.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);

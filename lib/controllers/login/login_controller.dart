@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:taxinet_driver/driver/home/d_home.dart';
 
-import '../../driver/home/driver_home.dart';
 import '../../views/login/loginview.dart';
 
 class LoginController extends ChangeNotifier {
@@ -88,7 +88,7 @@ class LoginController extends ChangeNotifier {
       username = uname;
       if (driversUserNames.contains(uname)) {
         Timer(const Duration(seconds: 5), () =>
-            Get.offAll(() => const DriverHome()));
+            Get.offAll(() => const NewDriverHome()));
       }
       else {
         Get.snackbar("Error 😢", "You are not a driver or invalid credentials provided",

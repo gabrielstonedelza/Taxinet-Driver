@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -8,10 +9,10 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
 import 'package:taxinet_driver/driver/home/bidpage.dart';
+import 'package:taxinet_driver/driver/home/d_home.dart';
 
 import '../../constants/app_colors.dart';
 import '../../states/app_state.dart';
-import 'driver_home.dart';
 import 'fab_widget.dart';
 
 class AcceptAndRejectRide extends StatefulWidget {
@@ -21,12 +22,18 @@ class AcceptAndRejectRide extends StatefulWidget {
   String pickUpLat;
   String pickUpLng;
   String notificationFrom;
-  String passenger;
+  String passengersUsername;
+  String notificationFromPic;
+  String pickUp;
+  String notificationTo;
+  String passengersPickUpId;
+  String drop_off_lat;
+  String drop_off_lng;
 
-  AcceptAndRejectRide({Key? key,required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passenger}) : super(key: key);
+  AcceptAndRejectRide({Key? key,required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passengersUsername,required this.notificationFromPic,required this.pickUp,required this.notificationTo,required this.passengersPickUpId,required this.drop_off_lat,required this.drop_off_lng}) : super(key: key);
 
   @override
-  State<AcceptAndRejectRide> createState() => _AcceptAndRejectRideState(rideId: this.rideId,dropOffId:this.dropOffId,dropOff:this.dropOff ,pickUpLat:this.pickUpLat,pickUpLng:this.pickUpLng,notificationFrom: this.notificationFrom,passenger: this.passenger);
+  State<AcceptAndRejectRide> createState() => _AcceptAndRejectRideState(rideId: this.rideId,dropOffId:this.dropOffId,dropOff:this.dropOff ,pickUpLat:this.pickUpLat,pickUpLng:this.pickUpLng,notificationFrom: this.notificationFrom,passengersUsername: this.passengersUsername,notificationFromPic:this.notificationFromPic,pickUp:this.pickUp,notificationTo:this.notificationTo,passengersPickUpId:this.passengersPickUpId,drop_off_lat: this.drop_off_lat,drop_off_lng: this.drop_off_lng);
 }
 
 class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
@@ -36,8 +43,14 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
   String pickUpLat;
   String pickUpLng;
   String notificationFrom;
-  String passenger;
-  _AcceptAndRejectRideState({required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passenger});
+  String passengersUsername;
+  String notificationFromPic;
+  String pickUp;
+  String notificationTo;
+  String passengersPickUpId;
+  String drop_off_lat;
+  String drop_off_lng;
+  _AcceptAndRejectRideState({required this.rideId,required this.dropOffId,required this.dropOff,required this.pickUpLat,required this.pickUpLng,required this.notificationFrom,required this.passengersUsername,required this.notificationFromPic,required this.pickUp,required this.notificationTo,required this.passengersPickUpId,required this.drop_off_lat,required this.drop_off_lng});
 
   var uToken;
   final storage = GetStorage();
@@ -46,11 +59,9 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
 
   final Completer<GoogleMapController> _mapController = Completer();
   final deMapController = DeMapController.to;
-  late String pickUp = "";
-  late String driver = "";
-  late String passPickUpId = "";
-  late String passengersPic = "";
-  late String passengersUsername = "";
+  BitmapDescriptor sourceIcon = BitmapDescriptor.defaultMarker;
+  BitmapDescriptor destinationIcon = BitmapDescriptor.defaultMarker;
+  List<LatLng> polylineCoordinates = [];
 
   addToRejectedRides() async {
     const bidUrl = "https://taxinetghana.xyz/add_to_rejected_rides/";
@@ -60,7 +71,7 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
       "Authorization": "Token $uToken"
     }, body: {
       "ride": rideId,
-      "driver": driver,
+      "driver": notificationTo
     });
     if (response.statusCode == 201) {
     } else {}
@@ -74,41 +85,37 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
       "Authorization": "Token $uToken"
     }, body: {
       "ride": rideId,
-      "driver": driver,
+      "driver": notificationTo,
+      "passengers_lat":pickUpLat,
+      "passengers_lng":pickUpLng
     });
     if (response.statusCode == 201) {
     } else {}
   }
 
-  Future<void> fetchRideDetail() async {
-    try {
-      final detailRideUrl = "https://taxinetghana.xyz/ride_requests/$rideId";
-      final myLink = Uri.parse(detailRideUrl);
-      http.Response response = await http.get(myLink, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-        "Authorization": "Token $uToken"
-      });
-      if (response.statusCode == 200) {
-        final codeUnits = response.body;
-        var jsonData = jsonDecode(codeUnits);
-        setState(() {
-          pickUp = jsonData['pick_up'];
-          driver = jsonData['driver'];
-          passPickUpId = jsonData['passengers_pick_up_place_id'];
-          passengersPic = jsonData['get_passenger_profile_pic'];
-          passengersUsername = jsonData['passengers_username'];
-        });
+  void setCustomMarkerIcon()async{
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/location-pin 2.png").then((icon){
+      sourceIcon = icon;
+    });
+    BitmapDescriptor.fromAssetImage(ImageConfiguration.empty, "assets/images/location-pin_1.png",).then((icon){
+      destinationIcon = icon;
+    });
+  }
+  void getPolyPoints() async{
+    PolylinePoints polylinePoints = PolylinePoints();
+    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
+      "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I",
+      PointLatLng(double.parse(pickUpLat), double.parse(pickUpLng)),
+      PointLatLng(double.parse(drop_off_lat), double.parse(drop_off_lng)),
+    );
 
-        print(passengersPic);
-      } else {
-        print(response.body);
-        Get.snackbar("Sorry", "please check your internet connection");
+    if(result.points.isNotEmpty){
+      for (var point in result.points) {
+        polylineCoordinates.add(
+            LatLng(point.latitude,point.longitude)
+        );
       }
-      setState(() {
-        isLoading = false;
-      });
-    } catch (e) {
-      Get.snackbar("Sorry", "please check your internet connection");
+      setState(() {});
     }
   }
 
@@ -117,6 +124,8 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    setCustomMarkerIcon();
+    getPolyPoints();
     if (storage.read("userToken") != null) {
       uToken = storage.read("userToken");
     }
@@ -126,7 +135,6 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
     deMapController.getCurrentLocation().listen((position) {
       centerScreen(position);
     });
-    fetchRideDetail();
     final appState = Provider.of<AppState>(context, listen: false);
     // appState.sendRequest(dropOff);
     appState.sendPassengerRouteRequest(dropOff,LatLng(double.parse(pickUpLat), double.parse(pickUpLng)));
@@ -158,7 +166,7 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                         width: MediaQuery.of(context).size.width,
                         child: GoogleMap(
                           initialCameraPosition: CameraPosition(
-                              target: LatLng(double.parse(pickUpLat),double.parse(pickUpLng)), zoom:11.5),
+                              target: appState.initialPosition, zoom:11.5),
                           myLocationButtonEnabled: false,
                           zoomControlsEnabled: false,
                           mapType: MapType.normal,
@@ -167,11 +175,29 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                             _mapController.complete(controller);
                             controller.setMapStyle(Utils.mapStyle);
                           },
-                          myLocationEnabled: true,
+                          // myLocationEnabled: true,
                           compassEnabled: true,
-                          markers: appState.markers,
+                          markers:{
+                            Marker(
+                              markerId: const MarkerId("Source"),
+                              position: LatLng(double.parse(pickUpLat), double.parse(pickUpLng)),
+                              icon: sourceIcon,
+                            ),
+                            Marker(
+                                markerId: const MarkerId("Destination"),
+                                position: LatLng(double.parse(drop_off_lat), double.parse(drop_off_lng)),
+                                icon: destinationIcon
+                            ),
+                          },
                           onCameraMove: appState.onCameraMove,
-                          polylines: appState.polyLines,
+                          polylines: {
+                            Polyline(
+                                polylineId:const PolylineId("route"),
+                                points: polylineCoordinates,
+                                color: Colors.green,
+                                width: 5
+                            ),
+                          },
                         ),
                       );
                   },),
@@ -190,14 +216,22 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                             child: Column(
                               children: [
                                 Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    // CircleAvatar(
-                                    //   backgroundImage: NetworkImage(passengersPic),
-                                    //   radius: 30,
-                                    // ),
-                                    Text(passenger),
+                                    Row(
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.only(right: 12.0),
+                                          child: CircleAvatar(
+                                            backgroundImage: NetworkImage(notificationFromPic),
+                                            radius: 30,
+                                          ),
+                                        ),
+                                        Text("${passengersUsername.toString().capitalize}",style: const TextStyle(fontWeight: FontWeight.bold),),
+                                      ],
+                                    ),
                                     Consumer<AppState>(builder: (context,appState,child){
-                                      return Text(appState.deTime);
+                                      return Text(appState.deTime,style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.grey));
                                     },)
                                   ],
                                 ),
@@ -252,7 +286,8 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                                         child: RawMaterialButton(
                                           onPressed: () {
                                             addToAcceptedRides();
-                                            Get.to(()=> BidPrice(rideId:rideId,driver:driver, pickUp: pickUp,passPickUpId: passPickUpId,passengersLat:pickUpLat,passengersLng:pickUpLng,passenger:passenger));
+                                            Get.to(()=> BidPrice(rideId:rideId,driver:notificationTo, pickUp: pickUp,passPickUpId: passengersPickUpId,passengersLat:pickUpLat,passengersLng:pickUpLng,passenger:passengersUsername,drop_off_lat:drop_off_lat,
+                                              drop_off_lng:drop_off_lng,));
                                           },
                                           shape: RoundedRectangleBorder(
                                               borderRadius:
@@ -310,11 +345,11 @@ class _AcceptAndRejectRideState extends State<AcceptAndRejectRide> {
                                               ),
                                               confirm: RawMaterialButton(
                                                 onPressed: () {
-                                                  appState.driverAcceptRideAndUpdateStatus(uToken, rideId,driver);
+                                                  appState.driverAcceptRideAndUpdateStatus(uToken, rideId,notificationTo);
                                                   addToRejectedRides();
                                                   appState.polyLines.clear();
                                                   appState.markers.clear();
-                                                  Get.offAll(() => const DriverHome());
+                                                  Get.offAll(() => const NewDriverHome());
                                                 },
                                                 shape: RoundedRectangleBorder(
                                                     borderRadius: BorderRadius.circular(12)),

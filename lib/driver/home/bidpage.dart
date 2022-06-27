@@ -6,12 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
+import 'package:taxinet_driver/driver/home/d_home.dart';
 import 'package:taxinet_driver/driver/home/routetopassenger.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../constants/app_colors.dart';
 import '../../states/app_state.dart';
-import 'driver_home.dart';
 import 'fab_widget.dart';
 
 class BidPrice extends StatefulWidget {
@@ -22,12 +22,14 @@ class BidPrice extends StatefulWidget {
   String passengersLat;
   String passengersLng;
   String passenger;
-  BidPrice({Key? key, required this.rideId, required this.driver,required this.pickUp, required this.passPickUpId, required this.passengersLat,required this.passengersLng,required this.passenger})
+  String drop_off_lat;
+  String drop_off_lng;
+  BidPrice({Key? key, required this.rideId, required this.driver,required this.pickUp, required this.passPickUpId, required this.passengersLat,required this.passengersLng,required this.passenger,required this.drop_off_lat,required this.drop_off_lng})
       : super(key: key);
 
   @override
   State<BidPrice> createState() =>
-      _BidPriceState(rideId: this.rideId, driver: this.driver, pickUp:this.pickUp, passPickUpId:this.passPickUpId,passengersLat:this.passengersLat,passengersLng:this.passengersLng,passenger:this.passenger);
+      _BidPriceState(rideId: this.rideId, driver: this.driver, pickUp:this.pickUp, passPickUpId:this.passPickUpId,passengersLat:this.passengersLat,passengersLng:this.passengersLng,passenger:this.passenger,drop_off_lat:this.drop_off_lat,drop_off_lng:this.drop_off_lng);
 }
 
 class _BidPriceState extends State<BidPrice> {
@@ -38,7 +40,9 @@ class _BidPriceState extends State<BidPrice> {
   String passengersLat;
   String passengersLng;
   String passenger;
-  _BidPriceState({required this.rideId, required this.driver,required this.pickUp, required this.passPickUpId,required this.passengersLat, required this.passengersLng,required this.passenger});
+  String drop_off_lat;
+  String drop_off_lng;
+  _BidPriceState({required this.rideId, required this.driver,required this.pickUp, required this.passPickUpId,required this.passengersLat, required this.passengersLng,required this.passenger,required this.drop_off_lat,required this.drop_off_lng});
   var uToken = "";
   final storage = GetStorage();
   var username = "";
@@ -58,7 +62,7 @@ class _BidPriceState extends State<BidPrice> {
       Get.snackbar("Sorry", "There was an error trying to call driver");
     }
   }
-  Future<void> getDriverDetails() async {
+  Future<void> getPassengerDetails() async {
     final profileUrl = "https://taxinetghana.xyz/get_passenger_details/$passenger";
     final myProfile = Uri.parse(profileUrl);
     final response =
@@ -93,7 +97,7 @@ class _BidPriceState extends State<BidPrice> {
     });
     if (response.statusCode == 201) {
     } else {
-
+      print(response.body);
     }
   }
 
@@ -142,7 +146,7 @@ class _BidPriceState extends State<BidPrice> {
     } else {}
   }
 
-  addToCompletedBidRides() async {
+  addToCompletedBidRides(double driversLat,double driversLng) async {
     const bidUrl = "https://taxinetghana.xyz/add_to_completed_bid_on_rides/";
     final myLink = Uri.parse(bidUrl);
     http.Response response = await http.post(myLink, headers: {
@@ -151,6 +155,10 @@ class _BidPriceState extends State<BidPrice> {
     }, body: {
       "ride": rideId,
       "driver": driver,
+      "drivers_lat": driversLat.toString(),
+      "drivers_lng": driversLng.toString(),
+      "passengers_pickup": pickUp,
+      "pick_up_place_id": passPickUpId,
     });
     if (response.statusCode == 201) {
     } else {}
@@ -243,7 +251,7 @@ class _BidPriceState extends State<BidPrice> {
                           borderRadius: BorderRadius.circular(12)),
                       border: OutlineInputBorder(
                           borderRadius: BorderRadius.circular(12))),
-                  keyboardType: TextInputType.text,
+                  keyboardType: TextInputType.number,
                 ),
               ),
             ),
@@ -331,13 +339,14 @@ class _BidPriceState extends State<BidPrice> {
                                 shape: const StadiumBorder(),
                                 fillColor: primaryColor,
                                 onPressed: (){
-                                  addToCompletedBidRides();
+                                  addToCompletedBidRides(appState.lat,appState.lng);
                                   driverAcceptRideAndUpdateStatus(rideId, driver,
                                       double.parse(appState.allBids.last['bid']));
                                   driverAcceptRideAndOnRoute(rideId, driver);
                                   appState.polyLines.clear();
                                   appState.markers.clear();
-                                  Get.offAll(()=> RouteToPassenger(pickUp: pickUp, passPickUpId: passPickUpId));
+                                  Get.offAll(()=> RouteToPassenger(pickUp: pickUp, passPickUpId: passPickUpId,pickUpLat:passengersLat,pickUpLng:passengersLng,drop_off_lat:drop_off_lat,
+                                    drop_off_lng:drop_off_lng,));
                                 }, child: const Text("Yes",style: TextStyle(color: Colors.white),)),
                             confirm: RawMaterialButton(
                                 shape: const StadiumBorder(),
@@ -382,7 +391,7 @@ class _BidPriceState extends State<BidPrice> {
                               addToRejectedRides();
                               appState.polyLines.clear();
                               appState.markers.clear();
-                              Get.offAll(() => const DriverHome());
+                              Get.offAll(() => const NewDriverHome());
                             },
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12)),
