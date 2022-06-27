@@ -24,7 +24,11 @@ late String dPlaceId = "";
 class DeMapController extends GetxController {
   bool isLoading = true;
   static DeMapController get to => Get.find<DeMapController>();
+<<<<<<< HEAD
   String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
+=======
+  
+>>>>>>> a5a0e818a9d13002c3e1fe7bf41bf5753ec06905
 
   @override
   void onInit() {
@@ -122,7 +126,7 @@ class DeMapController extends GetxController {
 }
 
 class AppState with ChangeNotifier {
-  String apiKey = "AIzaSyCVohvMiszUGO-kXyXVAPA2S7eiG890K4I";
+  
   final String baseUrl = "https://maps.googleapis.com/maps/api/directions/json";
 
   late double lat = userLatitude;
