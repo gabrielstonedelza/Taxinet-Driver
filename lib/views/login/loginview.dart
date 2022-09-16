@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
-import 'package:lottie/lottie.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:provider/provider.dart';
 import 'package:taxinet_driver/g_controllers/login/my_login_controller.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../constants/app_colors.dart';
@@ -168,7 +166,7 @@ class _LoginViewState extends State<LoginView> {
                             loginData.loginUser(_usernameController.text.trim(), _passwordController.text.trim());
 
                           } else {
-                            Get.snackbar("Error", "Something went wrong",
+                            Get.snackbar("Error", "Something went wrong,check the form",
                                 colorText: defaultTextColor1,
                                 snackPosition: SnackPosition.BOTTOM,
                                 backgroundColor: Colors.red
@@ -220,14 +218,14 @@ class _LoginViewState extends State<LoginView> {
                                 child: Text(
                                   "Note",
                                   style: TextStyle(
-                                      color: Colors.white,
+                                      color: Colors.red,
                                       fontWeight: FontWeight.bold,
                                       fontSize: 20),
                                 ),
                               ),
                               SizedBox(height: 20),
                               Center(
-                                child: Text("For Driver registration please kindly visit one of our offices or call 0244529353 for more information"),
+                                child: Text("For Driver registration please kindly visit one of our offices or call 0244529353 for more information",style: TextStyle(fontWeight: FontWeight.bold,color: defaultTextColor1),),
                               )
                             ],
                           ),

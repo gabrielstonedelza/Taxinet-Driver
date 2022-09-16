@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
+import 'package:google_fonts/google_fonts.dart';
 
-import 'package:taxinet_driver/controllers/login/login_controller.dart';
 import 'package:taxinet_driver/g_controllers/login/my_login_controller.dart';
 import 'package:taxinet_driver/g_controllers/user/user_controller.dart';
 import 'package:taxinet_driver/splash.dart';
-import 'package:taxinet_driver/states/app_state.dart';
 import 'package:get/get.dart';
+
+import 'controllers/inventorycontroller.dart';
+import 'controllers/mapcontroller.dart';
+import 'controllers/notificationController.dart';
+import 'controllers/schedulescontroller.dart';
+import 'controllers/walletcontroller.dart';
+
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +22,11 @@ void main() async{
   await GetStorage.init();
   Get.put(MyLoginController());
   Get.put(UserController());
-  Get.put(DeMapController());
+  Get.put(ScheduleController());
+  Get.put(NotificationController());
+  Get.put(WalletController());
+  Get.put(InventoryController());
+  Get.put(MapController());
   runApp(const MyApp());
 }
 
@@ -27,20 +36,16 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(create:(context)=> AppState()),
-        ChangeNotifierProvider(create:(context)=> LoginController()),
-      ],
-      child: GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        defaultTransition: Transition.leftToRight,
-        theme: ThemeData(
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      defaultTransition: Transition.leftToRight,
+      theme: ThemeData(
 // This is the theme of your application.
-          primarySwatch: Colors.blue,
-        ),
-        home: const SplashScreen(),
+        primarySwatch: Colors.blue,
+        // textTheme: GoogleFonts.sansitaSwashedTextTheme(Theme.of(context).textTheme)
+
       ),
+      home: const SplashScreen(),
     );
   }
 }

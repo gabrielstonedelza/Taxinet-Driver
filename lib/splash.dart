@@ -3,10 +3,10 @@ import 'package:get/get.dart';
 import 'package:animated_text_kit/animated_text_kit.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:provider/provider.dart';
-import 'package:taxinet_driver/controllers/login/login_controller.dart';
-import 'package:taxinet_driver/driver/home/d_home.dart';
 import 'package:taxinet_driver/views/login/loginview.dart';
+import 'package:taxinet_driver/views/login/newlogin.dart';
+
+import 'bottomnavigation.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -24,21 +24,19 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    final loginState = Provider.of<LoginController>(context, listen: false);
-    if (storage.read("username") != null && storage.read("userToken") != null) {
+    if (storage.read("username") != null) {
       username = storage.read("username");
       setState(() {
         hasToken = true;
       });
     }
 
-    loginState.getAllDrivers();
-    if (hasToken && storage.read("userType") == "Driver") {
+    if (hasToken) {
       Timer(const Duration(seconds: 7),
-          () => Get.offAll(() => const NewDriverHome()));
+          () => Get.offAll(() => const MyBottomNavigationBar()));
     } else {
       Timer(const Duration(seconds: 7),
-          () => Get.offAll(() => const LoginView()));
+          () => Get.offAll(() => const NewLogin()));
     }
   }
 

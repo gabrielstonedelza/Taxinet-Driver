@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:taxinet_driver/driver/home/d_home.dart';
+import '../../bottomnavigation.dart';
 import '../../constants/app_colors.dart';
 import '../../views/login/loginview.dart';
 
@@ -63,30 +63,15 @@ class MyLoginController extends GetxController{
       final resBody = response.body;
       var jsonData = jsonDecode(resBody);
       var userToken = jsonData['auth_token'];
+      var userId = jsonData['user'];
       storage.write("username", uname);
       storage.write("userToken", userToken);
       storage.write("userType", "Driver");
-      username = uname;
+      storage.write("userid", userId);
       update();
-      Get.defaultDialog(
-          title: "",
-          radius: 20,
-          backgroundColor: Colors.black54,
-          barrierDismissible: false,
-          content: Row(
-            children: const [
-              Expanded(child: Center(child: CircularProgressIndicator.adaptive(
-                strokeWidth: 5,
-                backgroundColor: primaryColor,
-                valueColor: AlwaysStoppedAnimation<Color>(Colors.grey),
-              ))),
-              Expanded(child: Text("Processing",style: TextStyle(color: Colors.white),))
-            ],
-          )
-      );
       if (driversUserNames.contains(uname)) {
         Timer(const Duration(seconds: 5), () =>
-            Get.offAll(() => const NewDriverHome()));
+            Get.offAll(() => const MyBottomNavigationBar()));
       }
       else {
         Get.snackbar("Sorry 😢", response.body,
