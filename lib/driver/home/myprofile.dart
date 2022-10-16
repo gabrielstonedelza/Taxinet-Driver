@@ -35,29 +35,29 @@ class _MyProfileState extends State<MyProfile> {
   }
 
   logoutUser() async {
-    storage.remove("username");
-    storage.remove("userToken");
-    storage.remove("userType");
-    storage.remove("verified");
-    storage.remove("userid");
+    // storage.remove("username");
+    // storage.remove("userToken");
+    // storage.remove("userType");
+    // storage.remove("verified");
+    // storage.remove("userid");
     Get.offAll(() => const NewLogin());
-    const logoutUrl = "https://taxinetghana.xyz/auth/token/logout";
-    final myLink = Uri.parse(logoutUrl);
-    http.Response response = await http.post(myLink, headers: {
-      'Accept': 'application/json',
-      "Authorization": "Token $uToken"
-    });
-
-    if (response.statusCode == 200) {
-
-      Get.snackbar("Success", "You were logged out",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: snackColor);
-      storage.remove("username");
-      storage.remove("userToken");
-      Get.offAll(() => const NewLogin());
-    }
+    // const logoutUrl = "https://taxinetghana.xyz/auth/token/logout";
+    // final myLink = Uri.parse(logoutUrl);
+    // http.Response response = await http.post(myLink, headers: {
+    //   'Accept': 'application/json',
+    //   "Authorization": "Token $uToken"
+    // });
+    //
+    // if (response.statusCode == 200) {
+    //
+    //   Get.snackbar("Success", "You were logged out",
+    //       colorText: Colors.white,
+    //       snackPosition: SnackPosition.BOTTOM,
+    //       backgroundColor: snackColor);
+    //   storage.remove("username");
+    //   storage.remove("userToken");
+    //   Get.offAll(() => const NewLogin());
+    // }
   }
   var uToken = "";
   var username = "";

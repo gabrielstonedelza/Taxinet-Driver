@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -31,6 +32,14 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   late PageController pageController;
   bool hasInternet = false;
   late StreamSubscription internetSubscription;
+  NotificationController notificationController = Get.find();
+
+  final screens = [
+    DriverHome(),
+    const Inventories(),
+    Notifications(),
+    const MyProfile(),
+  ];
 
   void onSelectedIndex(int index){
     setState(() {
@@ -67,60 +76,60 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   Widget build(BuildContext context) {
 
     return SafeArea(
-      child: Scaffold(
-        extendBody: true,
-        body: PageView(
-          physics: const NeverScrollableScrollPhysics(),
-          controller: pageController,
-          children: hasInternet ? <Widget>[
-            DriverHome(),
-            const Inventories(),
-            const Notifications(),
-            const MyProfile(),
-          ] : <Widget>[
-            const NoInternetConnection()
-          ],
-        ),
-        bottomNavigationBar: Theme(
-          data: Theme.of(context).copyWith(
-              iconTheme: const IconThemeData(color:Colors.white)
-          ),
-          child: WaterDropNavBar(
-            backgroundColor: Colors.white,
-            inactiveIconColor: Colors.grey,
-            bottomPadding: 10.0,
-            waterDropColor: primaryColor,
-            onItemSelected: (index) {
-              setState(() {
+        child:Scaffold(
+          bottomNavigationBar: NavigationBarTheme(
+
+            data: NavigationBarThemeData(
+                indicatorColor: Colors.blue.shade100,
+                labelTextStyle:  MaterialStateProperty.all(
+                    const TextStyle(fontSize:14, fontWeight: FontWeight.bold)
+                )
+            ),
+            child: NavigationBar(
+              animationDuration: const Duration(seconds: 3),
+              selectedIndex: selectedIndex,
+              onDestinationSelected: (int index) => setState((){
                 selectedIndex = index;
-              });
-              pageController.animateToPage(selectedIndex,
-                  duration: const Duration(milliseconds: 400),
-                  curve: Curves.easeOutQuad);
-            },
-            selectedIndex: selectedIndex,
-            barItems: [
-              BarItem(
-                filledIcon: Icons.home,
-                outlinedIcon: Icons.home_outlined,
-              ),
-
-              BarItem(
-                  filledIcon: Icons.assessment,
-                  outlinedIcon: Icons.assessment_outlined),
-
-              BarItem(
-                filledIcon: Icons.notifications,
-                outlinedIcon: Icons.notifications_outlined,
-              ),
-              BarItem(
-                filledIcon: Icons.person,
-                outlinedIcon: Icons.person_outline,
-              ),
-            ],
+              }),
+              height: 60,
+              backgroundColor: Colors.white,
+              destinations: [
+                const NavigationDestination(
+                  icon: Icon(Icons.home_outlined),
+                  selectedIcon: Icon(Icons.home),
+                  label: "Home",
+                ),
+                const NavigationDestination(
+                  icon: Icon(Icons.checklist_rtl_outlined),
+                  selectedIcon: Icon(Icons.checklist_rtl_rounded),
+                  label: "Inventories",
+                ),
+                GetBuilder<NotificationController>(builder: (controller){
+                  return NavigationDestination(
+                    icon: Badge(
+                        animationDuration: const Duration(seconds: 3),
+                        // padding: const EdgeInsets.all(2),
+                        // position: BadgePosition.bottomStart(),
+                        toAnimate: true,
+                        shape: BadgeShape.circle,
+                        badgeColor: Colors.red,
+                        // borderRadius: BorderRadius.circular(8),
+                        badgeContent: Text("${notificationController.notRead.length}",style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize:15)),
+                        child: const Icon(Icons.notifications_outlined)),
+                    selectedIcon: const Icon(Icons.notifications),
+                    label: "Notifications",
+                  );
+                }),
+                const NavigationDestination(
+                  icon: Icon(Icons.person_outline),
+                  selectedIcon: Icon(Icons.person),
+                  label: "Profile",
+                ),
+              ],
+            ),
           ),
-        ),
-      ),
+          body: screens[selectedIndex],
+        )
     );
   }
 }

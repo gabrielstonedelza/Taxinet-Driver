@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import '../../bottomnavigation.dart';
 import '../../constants/app_colors.dart';
 import '../../views/login/loginview.dart';
+import '../../views/login/newlogin.dart';
 
 class MyLoginController extends GetxController{
   static MyLoginController get to => Get.find<MyLoginController>();
@@ -17,6 +18,7 @@ class MyLoginController extends GetxController{
   late List allDrivers = [];
 
   late List driversUserNames = [];
+  bool hasErrors = false;
 
   bool isLoading = true;
   @override
@@ -69,18 +71,29 @@ class MyLoginController extends GetxController{
       storage.write("userType", "Driver");
       storage.write("userid", userId);
       update();
+      hasErrors = false;
       if (driversUserNames.contains(uname)) {
         Timer(const Duration(seconds: 5), () =>
             Get.offAll(() => const MyBottomNavigationBar()));
       }
       else {
-        Get.snackbar("Sorry 😢", response.body,
+        hasErrors = true;
+        Get.snackbar("Sorry 😢", "invalid details",
             duration: const Duration(seconds: 5),
             snackPosition: SnackPosition.BOTTOM,
             backgroundColor: Colors.red,
             colorText: defaultTextColor1);
-        Get.offAll(() => const LoginView());
+        Get.offAll(() => const NewLogin());
       }
+    }
+    else{
+      hasErrors = true;
+      Get.snackbar("Sorry 😢", "invalid details",
+          duration: const Duration(seconds: 5),
+          snackPosition: SnackPosition.BOTTOM,
+          backgroundColor: Colors.red,
+          colorText: defaultTextColor1);
+      return;
     }
   }
 }

@@ -1,6 +1,6 @@
 # taxinet
 
-A new Flutter project.
+A taxi scheduling app.
 
 ## Getting Started
 

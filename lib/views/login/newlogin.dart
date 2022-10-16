@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import "package:flutter/material.dart";
 import 'package:get_storage/get_storage.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -200,7 +199,7 @@ class _NewLoginState extends State<NewLogin> {
                     const SizedBox(height: 25,),
                     const SizedBox(
                         height: 20),
-                    isPosting ? const Center(
+                    isPosting  ? const Center(
                       child: CircularProgressIndicator.adaptive(
                         strokeWidth: 5,
                         backgroundColor: primaryColor,

@@ -53,23 +53,6 @@ class ScheduleController extends GetxController{
     if (storage.read("username") != null) {
       username = storage.read("username");
     }
-    // getActiveSchedules();
-    // getAllSchedules();
-    // getDriversOneTimeSchedules();
-    // getDriversDailySchedules();
-    // getDriversDaysSchedules();
-    // getDriversWeeklySchedules();
-    // getDriversMonthlySchedules();
-    // _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
-    //   getActiveSchedules();
-    //   getAllSchedules();
-    //   getDriversOneTimeSchedules();
-    //   getDriversDailySchedules();
-    //   getDriversDaysSchedules();
-    //   getDriversWeeklySchedules();
-    //   getDriversMonthlySchedules();
-    //   update();
-    // });
   }
   Future<void> getDetailSchedule(String slug) async {
     try {
@@ -104,8 +87,9 @@ class ScheduleController extends GetxController{
         update();
       }
       else{
+        print("this is coming from the schedule detail ${response.body}");
         if (kDebugMode) {
-          print(response.body);
+          print("this is coming from the schedule detail ${response.body}");
         }
       }
     } catch (e) {
@@ -313,6 +297,7 @@ class ScheduleController extends GetxController{
     }, body: {
       "passenger": passenger,
       "ride": rideTitle,
+
     });
     if (response.statusCode == 201) {
       rideStarted = true;
@@ -332,7 +317,7 @@ class ScheduleController extends GetxController{
     }
   }
 
-  driverEndTrip(String passenger, String rideTitle,String price,String pMethod) async {
+  driverEndTrip(String passenger, String rideTitle,String price,String pMethod,String timeElapsed) async {
     const requestUrl = "https://taxinetghana.xyz/driver_end_trip/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.post(myLink, headers: {
@@ -344,6 +329,7 @@ class ScheduleController extends GetxController{
       "ride": rideTitle,
       "price": price,
       "payment_method": pMethod,
+      "time_elapsed": timeElapsed,
     });
     if (response.statusCode == 201) {
       rideStarted = false;

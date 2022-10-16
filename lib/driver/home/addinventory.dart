@@ -260,7 +260,7 @@ class _AddInventoryState extends State<AddInventory> {
     return SafeArea(
 
       child:Scaffold(
-          backgroundColor:primaryColor,
+          // backgroundColor:primaryColor,
         appBar: AppBar(
           title: const Text("Add Inventory",style:TextStyle(color: defaultTextColor2)),
           centerTitle: true,

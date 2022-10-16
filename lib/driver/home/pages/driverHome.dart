@@ -12,6 +12,7 @@ import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import '../../../bottomnavigation.dart';
 import '../../../constants/app_colors.dart';
 import '../../../controllers/mapcontroller.dart';
+import '../../../controllers/notificationController.dart';
 import '../../../controllers/notifications/localnotification_manager.dart';
 import '../../../controllers/schedulescontroller.dart';
 import '../../../controllers/walletcontroller.dart';
@@ -84,6 +85,7 @@ class _DriverHomeState extends State<DriverHome> {
   late List allNots = [];
 
   late Timer _timer;
+  NotificationController notificationController = Get.find();
 
   Future<void> getAllTriggeredNotifications() async {
     const url = "https://taxinetghana.xyz/user_triggerd_notifications/";
@@ -207,6 +209,8 @@ class _DriverHomeState extends State<DriverHome> {
     scheduleController.getDriversDaysSchedules(uToken);
     scheduleController.getDriversWeeklySchedules(uToken);
     scheduleController.getDriversMonthlySchedules(uToken);
+    notificationController.getAllNotifications(uToken);
+    notificationController.getAllUnReadNotifications(uToken);
     walletController.getUserWallet(uToken);
     userController.getUserProfile(uToken);
     userController.getAllDrivers();
@@ -223,6 +227,8 @@ class _DriverHomeState extends State<DriverHome> {
       userController.getUserProfile(uToken);
       userController.getAllDrivers();
       userController.getAllPassengers();
+      notificationController.getAllNotifications(uToken);
+      notificationController.getAllUnReadNotifications(uToken);
 
     });
 
@@ -518,279 +524,6 @@ class _DriverHomeState extends State<DriverHome> {
                                   child: Text("Schedules",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: defaultTextColor2),)
                               ),
                               const SizedBox(height: 10,),
-                              // Padding(
-                              //   padding: const EdgeInsets.all(18.0),
-                              //   child: Row(
-                              //     children: [
-                              //
-                              //       Expanded(
-                              //         child: GestureDetector(
-                              //           onTap: (){
-                              //             showMaterialModalBottomSheet(
-                              //               context: context,
-                              //               isDismissible: true,
-                              //               shape: const RoundedRectangleBorder(
-                              //                   borderRadius:
-                              //                   BorderRadius.vertical(
-                              //                       top: Radius.circular(
-                              //                           25.0))),
-                              //               bounce: true,
-                              //               builder: (context) => SingleChildScrollView(
-                              //                 controller: ModalScrollController.of(context),
-                              //                 child: Column(
-                              //                   children: [
-                              //                     SizedBox(
-                              //                         height: 600,
-                              //                         child:  ListView.builder(
-                              //                             itemCount: scheduleController.allSchedules != null ? scheduleController.allSchedules.length : 0,
-                              //                             itemBuilder: (context,index){
-                              //                               items = scheduleController.allSchedules[index];
-                              //                               return Padding(
-                              //                                 padding: const EdgeInsets.only(left: 10, right: 10,),
-                              //                                 child: SlideInUp(
-                              //                                   animate: true,
-                              //                                   child: Card(
-                              //                                       elevation: 12,
-                              //                                       shape: RoundedRectangleBorder(
-                              //                                         borderRadius: BorderRadius.circular(12),
-                              //                                       ),
-                              //                                       child: ListTile(
-                              //                                           onTap: (){
-                              //                                             Get.to(()=> ScheduleDetail(slug:scheduleController.allSchedules[index]['slug'],title:scheduleController.allSchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
-                              //                                             // Navigator.pop(context);
-                              //                                           },
-                              //                                           leading: const Icon(Icons.access_time_filled),
-                              //                                           title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                              //                                           subtitle: Padding(
-                              //                                             padding: const EdgeInsets.only(top:10.0),
-                              //                                             child: Text(items['date_scheduled']),
-                              //                                           )
-                              //                                       )
-                              //                                   ),
-                              //                                 ),
-                              //                               );
-                              //                             }
-                              //                         )
-                              //                     ),
-                              //                   ],
-                              //                 ),
-                              //               ),
-                              //             );
-                              //           },
-                              //           child: ClipRRect(
-                              //             borderRadius: BorderRadius.circular(12),
-                              //             child: Container(
-                              //               color: greyBack,
-                              //               height: 85,
-                              //               width: 200,
-                              //               child: Padding(
-                              //                 padding: const EdgeInsets.all(8.0),
-                              //                 child: Column(
-                              //                   children: [
-                              //                     Row(
-                              //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //                       children: [
-                              //                         const Icon(FontAwesomeIcons.list,color: greenBack,),
-                              //                         Text("${scheduleController.allSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
-                              //                       ],
-                              //                     ),
-                              //                     const SizedBox(height: 10,),
-                              //                     const Text("All",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
-                              //                   ],
-                              //                 ),
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       ),
-                              //       const SizedBox(width: 20,),
-                              //       Expanded(
-                              //         child: GestureDetector(
-                              //           onTap: () {
-                              //             showMaterialModalBottomSheet(
-                              //               context: context,
-                              //               // expand: true,
-                              //               isDismissible: true,
-                              //               shape: const RoundedRectangleBorder(
-                              //                   borderRadius:
-                              //                   BorderRadius.vertical(
-                              //                       top: Radius.circular(
-                              //                           25.0))),
-                              //               bounce: true,
-                              //               builder: (context) => Padding(
-                              //                 padding: EdgeInsets.only(
-                              //                     bottom: MediaQuery.of(context)
-                              //                         .viewInsets
-                              //                         .bottom),
-                              //                 child: SizedBox(
-                              //                     height: 300,
-                              //                     child: Column(
-                              //                       mainAxisSize:
-                              //                       MainAxisSize.min,
-                              //                       children: [
-                              //                         const SizedBox(height: 30),
-                              //                         const Center(
-                              //                             child: Text(
-                              //                                 "How much would you like to load into your wallet?",
-                              //                                 style: TextStyle(
-                              //                                     fontWeight:
-                              //                                     FontWeight
-                              //                                         .bold))),
-                              //                         const SizedBox(height: 10),
-                              //                         Padding(
-                              //                           padding:
-                              //                           const EdgeInsets.all(
-                              //                               18.0),
-                              //                           child: Form(
-                              //                             key: formKey,
-                              //                             child: Column(
-                              //                               children: [
-                              //                                 Padding(
-                              //                                   padding:
-                              //                                   const EdgeInsets
-                              //                                       .only(
-                              //                                       bottom:
-                              //                                       10.0),
-                              //                                   child:
-                              //                                   TextFormField(
-                              //                                     controller:
-                              //                                     amountController,
-                              //                                     cursorColor:
-                              //                                     primaryColor,
-                              //                                     cursorRadius:
-                              //                                     const Radius
-                              //                                         .elliptical(
-                              //                                         10, 10),
-                              //                                     cursorWidth: 10,
-                              //                                     decoration: InputDecoration(
-                              //                                         labelText:
-                              //                                         "Enter amount",
-                              //                                         labelStyle:
-                              //                                         const TextStyle(
-                              //                                             color:
-                              //                                             secondaryColor),
-                              //                                         focusColor:
-                              //                                         primaryColor,
-                              //                                         fillColor:
-                              //                                         primaryColor,
-                              //                                         focusedBorder: OutlineInputBorder(
-                              //                                             borderSide: const BorderSide(
-                              //                                                 color:
-                              //                                                 primaryColor,
-                              //                                                 width:
-                              //                                                 2),
-                              //                                             borderRadius:
-                              //                                             BorderRadius.circular(
-                              //                                                 12)),
-                              //                                         border: OutlineInputBorder(
-                              //                                             borderRadius:
-                              //                                             BorderRadius.circular(12))),
-                              //                                     keyboardType:
-                              //                                     TextInputType
-                              //                                         .number,
-                              //                                     validator:
-                              //                                         (value) {
-                              //                                       if (value!
-                              //                                           .isEmpty) {
-                              //                                         return "Please enter amount";
-                              //                                       }
-                              //                                     },
-                              //                                   ),
-                              //                                 ),
-                              //                                 const SizedBox(
-                              //                                     height: 20),
-                              //                                 RawMaterialButton(
-                              //                                   onPressed:
-                              //                                       () {
-                              //                                     Get.snackbar("Please wait", "processing request.",
-                              //                                         colorText: Colors.white,
-                              //                                         snackPosition: SnackPosition.BOTTOM,
-                              //                                         backgroundColor: snackColor,
-                              //                                         duration: const Duration(seconds: 5)
-                              //                                     );
-                              //                                     Navigator.pop(context);
-                              //
-                              //                                     if (formKey
-                              //                                         .currentState!
-                              //                                         .validate()) {
-                              //                                       processLoadWallet();
-                              //                                     } else {
-                              //                                       Get.snackbar("Sorry", "something went wrong,try again later",
-                              //                                           colorText: Colors.white,
-                              //                                           snackPosition: SnackPosition.BOTTOM,
-                              //                                           backgroundColor: Colors.red,
-                              //                                           duration: const Duration(seconds: 5)
-                              //                                       );
-                              //                                       return;
-                              //                                     }
-                              //                                   },
-                              //                                   // child: const Text("Send"),
-                              //                                   shape: RoundedRectangleBorder(
-                              //                                       borderRadius:
-                              //                                       BorderRadius.circular(8)),
-                              //                                   elevation:
-                              //                                   8,
-                              //                                   child:
-                              //                                   const Text(
-                              //                                     "Send",
-                              //                                     style: TextStyle(
-                              //                                         fontWeight: FontWeight
-                              //                                             .bold,
-                              //                                         fontSize:
-                              //                                         20,
-                              //                                         color:
-                              //                                         defaultTextColor1),
-                              //                                   ),
-                              //                                   fillColor:
-                              //                                   primaryColor,
-                              //                                   splashColor:
-                              //                                   defaultColor,
-                              //                                 )
-                              //                               ],
-                              //                             ),
-                              //                           ),
-                              //                         )
-                              //                       ],
-                              //                     )),
-                              //               ),
-                              //             );
-                              //           },
-                              //           child: ClipRRect(
-                              //             borderRadius: BorderRadius.circular(12),
-                              //             child: Container(
-                              //               color: greyBack,
-                              //               height: 85,
-                              //               width: 200,
-                              //               child: Padding(
-                              //                 padding: const EdgeInsets.all(8.0),
-                              //                 child: Column(
-                              //                   children: [
-                              //                     Row(
-                              //                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              //                       children: [
-                              //
-                              //                         GetBuilder<WalletController>(
-                              //                             builder: (controller) {
-                              //                               return Text(
-                              //                                   "¢ ${walletController.wallet}",
-                              //                                   style: const TextStyle(
-                              //                                       fontWeight: FontWeight.bold,
-                              //                                       fontSize: 20,color:Colors.white));
-                              //                             })
-                              //                       ],
-                              //                     ),
-                              //                     const SizedBox(height: 10,),
-                              //                     const Text("Wallet",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
-                              //                   ],
-                              //                 ),
-                              //               ),
-                              //             ),
-                              //           ),
-                              //         ),
-                              //       ),
-                              //     ],
-                              //   ),
-                              // ),
                               const SizedBox(height: 10,),
                               Padding(
                                 padding: const EdgeInsets.all(18.0),
@@ -859,7 +592,9 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.activeSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (controller){
+                                                        return Text("${scheduleController.activeSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
@@ -940,7 +675,9 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.allOneTimeSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (controller){
+                                                        return Text("${scheduleController.allOneTimeSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
@@ -1023,7 +760,10 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.allDailySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (_){
+                                                        return Text("${scheduleController.allDailySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
+
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
@@ -1099,7 +839,9 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.allDaysSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (_){
+                                                        return Text("${scheduleController.allDaysSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
@@ -1189,7 +931,9 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.allWeeklySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (_){
+                                                        return Text("${scheduleController.allWeeklySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
@@ -1270,7 +1014,9 @@ class _DriverHomeState extends State<DriverHome> {
                                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
-                                                      Text("${scheduleController.allWeeklySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                      GetBuilder<ScheduleController>(builder: (_){
+                                                        return Text("${scheduleController.allWeeklySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                      })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
