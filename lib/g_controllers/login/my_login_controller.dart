@@ -28,6 +28,8 @@ class MyLoginController extends GetxController{
     getAllDrivers();
   }
 
+  
+
   Future<void> getAllDrivers() async{
     try {
       isLoading = true;

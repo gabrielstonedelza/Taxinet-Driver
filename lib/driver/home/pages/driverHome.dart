@@ -560,13 +560,19 @@ class _DriverHomeState extends State<DriverHome> {
                                                                 ),
                                                                 child: ListTile(
                                                                     onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.activeSchedules[index]['slug'],title:scheduleController.activeSchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.activeSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                     },
                                                                     leading: const Icon(Icons.access_time_filled),
                                                                     title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                     subtitle: Padding(
                                                                       padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Text(items['date_scheduled']),
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                          Text(items['date_scheduled']),
+                                                                        ],
+                                                                      ),
                                                                     )
                                                                 )
                                                             ),
@@ -640,14 +646,20 @@ class _DriverHomeState extends State<DriverHome> {
                                                                     ),
                                                                     child: ListTile(
                                                                         onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allOneTimeSchedules[index]['slug'],title:scheduleController.allOneTimeSchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allOneTimeSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                           // Navigator.pop(context);
                                                                         },
                                                                         leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
+                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                         subtitle: Padding(
                                                                           padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Text(items['date_scheduled']),
+                                                                          child: Column(
+                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                              Text(items['date_scheduled']),
+                                                                            ],
+                                                                          ),
                                                                         )
                                                                     )
                                                                 ),
@@ -728,13 +740,19 @@ class _DriverHomeState extends State<DriverHome> {
                                                                 ),
                                                                 child: ListTile(
                                                                     onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDailySchedules[index]['slug'],title:scheduleController.allDailySchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDailySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                     },
                                                                     leading: const Icon(Icons.access_time_filled),
-                                                                    title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
+                                                                    title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                     subtitle: Padding(
                                                                       padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Text(items['date_scheduled']),
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                          Text(items['date_scheduled']),
+                                                                        ],
+                                                                      ),
                                                                     )
                                                                 )
                                                             ),
@@ -807,13 +825,19 @@ class _DriverHomeState extends State<DriverHome> {
                                                                 ),
                                                                 child: ListTile(
                                                                     onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDaysSchedules[index]['slug'],title:scheduleController.allDaysSchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDaysSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                     },
                                                                     leading: const Icon(Icons.access_time_filled),
-                                                                    title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
+                                                                    title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                     subtitle: Padding(
                                                                       padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Text(items['date_scheduled']),
+                                                                      child: Column(
+                                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                                        children: [
+                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                          Text(items['date_scheduled']),
+                                                                        ],
+                                                                      ),
                                                                     )
                                                                 )
                                                             ),
@@ -896,14 +920,20 @@ class _DriverHomeState extends State<DriverHome> {
                                                                     ),
                                                                     child: ListTile(
                                                                         onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allWeeklySchedules[index]['slug'],title:scheduleController.allWeeklySchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allWeeklySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                           // Navigator.pop(context);
                                                                         },
                                                                         leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
+                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                         subtitle: Padding(
                                                                           padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Text(items['date_scheduled']),
+                                                                          child: Column(
+                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                              Text(items['date_scheduled']),
+                                                                            ],
+                                                                          ),
                                                                         )
                                                                     )
                                                                 ),
@@ -979,14 +1009,20 @@ class _DriverHomeState extends State<DriverHome> {
                                                                     ),
                                                                     child: ListTile(
                                                                         onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allMonthlySchedules[index]['slug'],title:scheduleController.allMonthlySchedules[index]['schedule_title'],id:scheduleController.allSchedules[index]['id'].toString()));
+                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allMonthlySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
                                                                           // Navigator.pop(context);
                                                                         },
                                                                         leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['schedule_title'],style:const TextStyle(fontWeight: FontWeight.bold)),
+                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
                                                                         subtitle: Padding(
                                                                           padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Text(items['date_scheduled']),
+                                                                          child: Column(
+                                                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                                                            children: [
+                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
+                                                                              Text(items['date_scheduled']),
+                                                                            ],
+                                                                          ),
                                                                         )
                                                                     )
                                                                 ),

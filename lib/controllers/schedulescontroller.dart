@@ -87,7 +87,9 @@ class ScheduleController extends GetxController{
         update();
       }
       else{
-        print("this is coming from the schedule detail ${response.body}");
+        if (kDebugMode) {
+          print("this is coming from the schedule detail ${response.body}");
+        }
         if (kDebugMode) {
           print("this is coming from the schedule detail ${response.body}");
         }
@@ -287,7 +289,7 @@ class ScheduleController extends GetxController{
     }
   }
 
-  driverStartTrip(String passenger, String rideTitle) async {
+  driverStartTrip(String passenger,String rideId) async {
     const requestUrl = "https://taxinetghana.xyz/driver_start_trip/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.post(myLink, headers: {
@@ -296,8 +298,7 @@ class ScheduleController extends GetxController{
       "Authorization": "Token $uToken"
     }, body: {
       "passenger": passenger,
-      "ride": rideTitle,
-
+      "ride": rideId,
     });
     if (response.statusCode == 201) {
       rideStarted = true;
@@ -309,6 +310,7 @@ class ScheduleController extends GetxController{
       update();
     }
     else{
+      print(response.body);
       Get.snackbar("Sorry 😝", "something went wrong. Please try again later",
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -317,7 +319,7 @@ class ScheduleController extends GetxController{
     }
   }
 
-  driverEndTrip(String passenger, String rideTitle,String price,String pMethod,String timeElapsed) async {
+  driverEndTrip(String passenger, String rideId,String price,String pMethod,String timeElapsed) async {
     const requestUrl = "https://taxinetghana.xyz/driver_end_trip/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.post(myLink, headers: {
@@ -326,7 +328,7 @@ class ScheduleController extends GetxController{
       "Authorization": "Token $uToken"
     }, body: {
       "passenger": passenger,
-      "ride": rideTitle,
+      "ride": rideId,
       "price": price,
       "payment_method": pMethod,
       "time_elapsed": timeElapsed,
