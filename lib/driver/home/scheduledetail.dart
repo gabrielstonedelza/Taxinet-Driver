@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:url_launcher/url_launcher.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
@@ -135,6 +135,8 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
   String scheduleRideId = "";
   String charge = "";
   bool rideStarted = false;
+  String drop_off_lat = "";
+  String drop_off_lng = "";
   final SendSmsController sendSms = SendSmsController();
 
   Future<void> getDetailSchedule() async {
@@ -148,7 +150,8 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
       final codeUnits = response.body;
       var jsonData = jsonDecode(codeUnits);
       passengerWithSchedule = jsonData['get_passenger_name'];
-      // passengerPic = jsonData['get_passenger_profile_pic'];
+      drop_off_lat = jsonData['drop_off_lat'];
+      drop_off_lng = jsonData['drop_off_lng'];
       scheduleType = jsonData['schedule_type'];
       rideType = jsonData['ride_type'];
       pickUpLocation = jsonData['pickup_location'];
@@ -167,6 +170,17 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
     setState(() {
       isLoading = false;
     });
+  }
+
+  Future<void> openMap(String lat,String lng)async {
+    // final Uri _url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$drop_off_lat,$drop_off_lng');
+    String googleMapUrl = 'https://www.google.com/maps/search/?api=1&query=$drop_off_lat,$drop_off_lng';
+    if (await canLaunch(googleMapUrl)) {
+      await launch(googleMapUrl);
+    }
+    else{
+      throw 'Could not launch $googleMapUrl';
+    }
   }
 
   @override
@@ -462,6 +476,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                                                         ))
                                                       : RawMaterialButton(
                                                           onPressed: () {
+
                                                             setState(() {
                                                               sentOTP = true;
                                                               String telnum = passengerPhoneNumber;
@@ -1136,6 +1151,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                               id);
                       // //  start timer here
                       startTimer();
+                      openMap(drop_off_lat, drop_off_lng);
                     }
                     else{
                       Get.snackbar("Number Error", "invalid number",
