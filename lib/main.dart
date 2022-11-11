@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'controllers/inventorycontroller.dart';
 import 'controllers/mapcontroller.dart';
 import 'controllers/notificationController.dart';
+import 'controllers/salarycontroller.dart';
 import 'controllers/schedulescontroller.dart';
 import 'controllers/walletcontroller.dart';
 
@@ -27,6 +28,7 @@ void main() async{
   Get.put(WalletController());
   Get.put(InventoryController());
   Get.put(MapController());
+  Get.put(SalaryController());
   runApp(const MyApp());
 }
 

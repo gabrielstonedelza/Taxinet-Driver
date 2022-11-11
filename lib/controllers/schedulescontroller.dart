@@ -15,7 +15,7 @@ class ScheduleController extends GetxController{
   String uToken = "";
   List activeSchedules = [];
   List allSchedules = [];
-  List allOneTimeSchedules = [];
+  List allShortTripSchedules = [];
   List allDailySchedules = [];
   List allWeeklySchedules = [];
   List allDaysSchedules = [];
@@ -151,7 +151,7 @@ class ScheduleController extends GetxController{
   }
 
   //drivers schedules by types
-  Future<void> getDriversOneTimeSchedules(String token) async {
+  Future<void> getDriversShortTripsSchedules(String token) async {
     try {
       isLoading = true;
       const walletUrl = "https://taxinetghana.xyz/get_driver_scheduled_for_one_time/";
@@ -162,7 +162,7 @@ class ScheduleController extends GetxController{
       });
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
-        allOneTimeSchedules.assignAll(jsonData);
+        allShortTripSchedules.assignAll(jsonData);
         update();
       }
     } catch (e) {

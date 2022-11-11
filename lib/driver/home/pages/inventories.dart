@@ -45,6 +45,7 @@ class _InventoriesState extends State<Inventories> {
     return Scaffold(
       backgroundColor:primaryColor,
       appBar: AppBar(
+        elevation: 0,
         backgroundColor:primaryColor,
         title: const Text("Inventories"),
         actions: [

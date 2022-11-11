@@ -125,6 +125,7 @@ class _AddInventoryState extends State<AddInventory> {
 
   final _formKey = GlobalKey<FormState>();
   bool isPosting = false;
+  var userWalletId = "";
 
   void _startPosting()async{
     setState(() {
@@ -187,6 +188,8 @@ class _AddInventoryState extends State<AddInventory> {
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: primaryColor,
           colorText: defaultTextColor1);
+      updateDriversWallet();
+      processPaymentToday();
       Get.offAll(() => const MyBottomNavigationBar());
     }
     else{
@@ -220,17 +223,17 @@ class _AddInventoryState extends State<AddInventory> {
   }
 
   updateDriversWallet()async {
-    final requestUrl = "https://taxinetghana.xyz/update_drivers_wallet/${walletController.walletId}/";
+    final requestUrl = "https://taxinetghana.xyz/user_update_wallet/$userWalletId/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.put(myLink, headers: {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
     }, body: {
-      "driver": walletController.driver,
+      "user": walletController.userUpdatingWallet,
       "amount": amount.toString(),
     });
-    if(response.statusCode == 201){
+    if(response.statusCode == 200){
 
     }
     else{
@@ -253,12 +256,13 @@ class _AddInventoryState extends State<AddInventory> {
     if (storage.read("userid") != null) {
       userId = storage.read("userid");
     }
+    walletController.getUserWallet(uToken);
+    userWalletId = walletController.walletId.toString();
   }
 
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-
       child:Scaffold(
           // backgroundColor:primaryColor,
         appBar: AppBar(
@@ -334,7 +338,7 @@ class _AddInventoryState extends State<AddInventory> {
                               ),
                               cursorColor: defaultTextColor2,
                               style: const TextStyle(color: defaultTextColor2),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               textInputAction: TextInputAction.next,
                               validator: (value){
                                 if(value!.isEmpty){
@@ -365,7 +369,7 @@ class _AddInventoryState extends State<AddInventory> {
                               ),
                               cursorColor: defaultTextColor2,
                               style: const TextStyle(color: defaultTextColor2),
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               textInputAction: TextInputAction.next,
                               validator: (value){
                                 if(value!.isEmpty){
@@ -1703,8 +1707,8 @@ class _AddInventoryState extends State<AddInventory> {
                                 return;
                               }
                               processInventory();
-                              processPaymentToday();
-                              updateDriversWallet();
+                              // processPaymentToday();
+                              // updateDriversWallet();
                             } else {
                               Get.snackbar("Error", "something went wrong.please try again later",
                                   colorText: defaultTextColor1,
@@ -1739,7 +1743,6 @@ class _AddInventoryState extends State<AddInventory> {
         )
       )
     );
-    
   }
   void _onDropDownItemSelectedBrand(newValueSelected) {
     setState(() {

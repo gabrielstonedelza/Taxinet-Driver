@@ -8,6 +8,8 @@ import '../../../controllers/notificationController.dart';
 
 import '../../../g_controllers/user/user_controller.dart';
 import '../../../widgets/shimmers/shimmerwidget.dart';
+import '../mysalaries.dart';
+import 'driverHome.dart';
 
 
 class Notifications extends StatefulWidget {
@@ -43,6 +45,7 @@ class _NotificationsState extends State<Notifications> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
+          elevation: 0,
           title: const Text("Notifications"),
           backgroundColor:primaryColor,
         ),
@@ -64,7 +67,17 @@ class _NotificationsState extends State<Notifications> {
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child:items['read'] == "Read" ? ListTile(
-
+                          onTap: (){
+                            if(notificationController.allNotifications[index]['notification_title'] == "New Schedule Ride Request"){
+                              Get.to(() => DriverHome());
+                            }
+                            if(notificationController.allNotifications[index]['notification_title'] == "New private message"){
+                              Get.to(() => DriverHome());
+                            }
+                            if(notificationController.allNotifications[index]['notification_title'] == "Monthly Salary Payment"){
+                              Get.to(() => const MySalaries());
+                            }
+                          },
                           leading: const CircleAvatar(
                               backgroundColor: Colors.grey,
                               foregroundColor: Colors.white,

@@ -13,7 +13,7 @@ class WalletController extends GetxController{
   String wallet = "00";
   List walletDetails = [];
   String walletId = "";
-  String driver = "";
+  String userUpdatingWallet = "";
   late Timer _timer;
 
 
@@ -48,7 +48,7 @@ class WalletController extends GetxController{
         for (var i in walletDetails) {
           wallet = i['amount'];
           walletId = i['id'].toString();
-          driver = i['driver'].toString();
+          userUpdatingWallet = i['user'].toString();
         }
         update();
       }

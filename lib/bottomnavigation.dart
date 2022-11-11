@@ -1,17 +1,16 @@
 
 import 'dart:async';
-
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'package:badges/badges.dart';
 import 'package:flutter/material.dart';
 import 'package:get_storage/get_storage.dart';
 
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-import 'package:water_drop_nav_bar/water_drop_nav_bar.dart';
-import '../constants/app_colors.dart';
 import 'controllers/notificationController.dart';
+import 'driver/home/accountblocked.dart';
 import 'driver/home/myprofile.dart';
-import 'driver/home/nointernetconnection.dart';
 import 'driver/home/pages/inventories.dart';
 import 'driver/home/pages/notifications.dart';
 import 'driver/home/pages/driverHome.dart';
@@ -33,6 +32,32 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   bool hasInternet = false;
   late StreamSubscription internetSubscription;
   NotificationController notificationController = Get.find();
+  late List allBlockedUsers = [];
+  late List blockedUsernames = [];
+  bool isBlocked = false;
+  bool isLoading = true;
+  late Timer _timer;
+
+  fetchBlockedAgents()async{
+    const url = "https://fnetghana.xyz/get_blocked_users/";
+    var myLink = Uri.parse(url);
+    final response = await http.get(myLink,);
+    if(response.statusCode == 200){
+      final codeUnits = response.body.codeUnits;
+      var jsonData = const Utf8Decoder().convert(codeUnits);
+      allBlockedUsers = json.decode(jsonData);
+      for(var i in allBlockedUsers){
+        if(!blockedUsernames.contains(i['get_username'])){
+          blockedUsernames.add(i['get_username']);
+        }
+      }
+    }
+
+    setState(() {
+      isLoading = false;
+      allBlockedUsers = allBlockedUsers;
+    });
+  }
 
   final screens = [
     DriverHome(),
@@ -64,6 +89,10 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       username = storage.read("username");
     }
     pageController = PageController(initialPage: selectedIndex);
+    fetchBlockedAgents();
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      fetchBlockedAgents();
+    });
   }
 
   @override
@@ -76,7 +105,9 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   Widget build(BuildContext context) {
 
     return SafeArea(
-        child:Scaffold(
+        child: blockedUsernames.contains(username) ? const Scaffold(
+            body: AccountBlockNotification()
+        ) :Scaffold(
           bottomNavigationBar: NavigationBarTheme(
 
             data: NavigationBarThemeData(

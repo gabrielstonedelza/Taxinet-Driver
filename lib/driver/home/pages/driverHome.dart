@@ -6,20 +6,25 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
-import '../../../bottomnavigation.dart';
 import '../../../constants/app_colors.dart';
 import '../../../controllers/mapcontroller.dart';
 import '../../../controllers/notificationController.dart';
 import '../../../controllers/notifications/localnotification_manager.dart';
+import '../../../controllers/salarycontroller.dart';
 import '../../../controllers/schedulescontroller.dart';
 import '../../../controllers/walletcontroller.dart';
 import '../../../g_controllers/user/user_controller.dart';
 import '../../../widgets/shimmers/shimmerwidget.dart';
+import '../../schedules/activeschedules.dart';
+import '../../schedules/dailytrips.dart';
+import '../../schedules/days.dart';
+import '../../schedules/monthly.dart';
+import '../../schedules/shorttrips.dart';
+import '../../schedules/weekly.dart';
+import '../mysalaries.dart';
 import '../paymentmethods.dart';
-import '../scheduledetail.dart';
 import '../transfers/transfers.dart';
 import 'notifications.dart';
 
@@ -53,6 +58,7 @@ class _DriverHomeState extends State<DriverHome> {
   ScheduleController scheduleController = Get.find();
 
   final MapController _mapController = Get.find();
+  final SalaryController salaryController = Get.find();
 
   final storage = GetStorage();
 
@@ -204,7 +210,7 @@ class _DriverHomeState extends State<DriverHome> {
 
     scheduleController.getActiveSchedules(uToken);
     scheduleController.getAllSchedules(uToken);
-    scheduleController.getDriversOneTimeSchedules(uToken);
+    scheduleController.getDriversShortTripsSchedules(uToken);
     scheduleController.getDriversDailySchedules(uToken);
     scheduleController.getDriversDaysSchedules(uToken);
     scheduleController.getDriversWeeklySchedules(uToken);
@@ -215,10 +221,11 @@ class _DriverHomeState extends State<DriverHome> {
     userController.getUserProfile(uToken);
     userController.getAllDrivers();
     userController.getAllPassengers();
+    salaryController.getAllSalary(uToken);
     _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
       scheduleController.getActiveSchedules(uToken);
       scheduleController.getAllSchedules(uToken);
-      scheduleController.getDriversOneTimeSchedules(uToken);
+      scheduleController.getDriversShortTripsSchedules(uToken);
       scheduleController.getDriversDailySchedules(uToken);
       scheduleController.getDriversDaysSchedules(uToken);
       scheduleController.getDriversWeeklySchedules(uToken);
@@ -229,7 +236,7 @@ class _DriverHomeState extends State<DriverHome> {
       userController.getAllPassengers();
       notificationController.getAllNotifications(uToken);
       notificationController.getAllUnReadNotifications(uToken);
-
+      salaryController.getAllSalary(uToken);
     });
 
     getAllTriggeredNotifications();
@@ -260,7 +267,7 @@ class _DriverHomeState extends State<DriverHome> {
   onRideRequestNotification(ReceiveNotification notification) {}
 
   onRideRequestNotificationClick(String payload) {
-    Get.to(() => const MyBottomNavigationBar());
+    Get.to(() => Notifications());
   }
 
   @override
@@ -532,57 +539,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: SizedBox(
-                                                  height: 600,
-                                                  child: ListView.builder(
-                                                      itemCount: scheduleController.activeSchedules != null ? scheduleController.activeSchedules.length : 0,
-                                                      itemBuilder: (context,index){
-                                                        items = scheduleController.activeSchedules[index];
-                                                        return Padding(
-                                                          padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                          child: SlideInUp(
-                                                            animate: true,
-                                                            child: Card(
-                                                                elevation: 12,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(12),
-                                                                ),
-                                                                child: ListTile(
-                                                                    onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.activeSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                    },
-                                                                    leading: const Icon(Icons.access_time_filled),
-                                                                    title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                    subtitle: Padding(
-                                                                      padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Column(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                          Text(items['date_scheduled']),
-                                                                        ],
-                                                                      ),
-                                                                    )
-                                                                )
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                  )
-                                              ),
-                                            ),
-                                          );
+                                          Get.to(()=> const ActiveSchedules());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -616,62 +573,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: (){
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: Column(
-                                                children: [
-                                                  SizedBox(
-                                                      height: 600,
-                                                      child:  ListView.builder(
-                                                          itemCount: scheduleController.allOneTimeSchedules != null ? scheduleController.allOneTimeSchedules.length : 0,
-                                                          itemBuilder: (context,index){
-                                                            items = scheduleController.allOneTimeSchedules[index];
-                                                            return Padding(
-                                                              padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                              child: SlideInUp(
-                                                                animate: true,
-                                                                child: Card(
-                                                                    elevation: 12,
-                                                                    shape: RoundedRectangleBorder(
-                                                                      borderRadius: BorderRadius.circular(12),
-                                                                    ),
-                                                                    child: ListTile(
-                                                                        onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allOneTimeSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                          // Navigator.pop(context);
-                                                                        },
-                                                                        leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                        subtitle: Padding(
-                                                                          padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                              Text(items['date_scheduled']),
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                    )
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }
-                                                      )
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                         Get.to(()=> const ShortTrips());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -688,12 +590,12 @@ class _DriverHomeState extends State<DriverHome> {
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
                                                       GetBuilder<ScheduleController>(builder: (controller){
-                                                        return Text("${scheduleController.allOneTimeSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                        return Text("${scheduleController.allShortTripSchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
                                                       })
                                                     ],
                                                   ),
                                                   const SizedBox(height: 10,),
-                                                  const Text("One Time",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
+                                                  const Text("Short Trips",style: TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),)
                                                 ],
                                               ),
                                             ),
@@ -712,57 +614,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: SizedBox(
-                                                  height: 600,
-                                                  child: ListView.builder(
-                                                      itemCount: scheduleController.allDailySchedules != null ? scheduleController.allDailySchedules.length : 0,
-                                                      itemBuilder: (context,index){
-                                                        items = scheduleController.allDailySchedules[index];
-                                                        return Padding(
-                                                          padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                          child: SlideInUp(
-                                                            animate: true,
-                                                            child: Card(
-                                                                elevation: 12,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(12),
-                                                                ),
-                                                                child: ListTile(
-                                                                    onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDailySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                    },
-                                                                    leading: const Icon(Icons.access_time_filled),
-                                                                    title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                    subtitle: Padding(
-                                                                      padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Column(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                          Text(items['date_scheduled']),
-                                                                        ],
-                                                                      ),
-                                                                    )
-                                                                )
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                  )
-                                              ),
-                                            ),
-                                          );
+                                          Get.to(() => const DailySchedules());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -797,57 +649,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () {
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: SizedBox(
-                                                  height: 600,
-                                                  child: ListView.builder(
-                                                      itemCount: scheduleController.allDaysSchedules != null ? scheduleController.allDaysSchedules.length : 0,
-                                                      itemBuilder: (context,index){
-                                                        items = scheduleController.allDaysSchedules[index];
-                                                        return Padding(
-                                                          padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                          child: SlideInUp(
-                                                            animate: true,
-                                                            child: Card(
-                                                                elevation: 12,
-                                                                shape: RoundedRectangleBorder(
-                                                                  borderRadius: BorderRadius.circular(12),
-                                                                ),
-                                                                child: ListTile(
-                                                                    onTap: (){
-                                                                      Get.to(()=> ScheduleDetail(slug:scheduleController.allDaysSchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                    },
-                                                                    leading: const Icon(Icons.access_time_filled),
-                                                                    title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                    subtitle: Padding(
-                                                                      padding: const EdgeInsets.only(top:10.0),
-                                                                      child: Column(
-                                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                                        children: [
-                                                                          Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                          Text(items['date_scheduled']),
-                                                                        ],
-                                                                      ),
-                                                                    )
-                                                                )
-                                                            ),
-                                                          ),
-                                                        );
-                                                      }
-                                                  )
-                                              ),
-                                            ),
-                                          );
+                                        Get.to(() => const DaysSchedules());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -878,7 +680,6 @@ class _DriverHomeState extends State<DriverHome> {
                                       ),
                                     ),
 
-
                                   ],
                                 ),
                               ),
@@ -890,62 +691,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: (){
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: Column(
-                                                children: [
-                                                  SizedBox(
-                                                      height: 600,
-                                                      child:  ListView.builder(
-                                                          itemCount: scheduleController.allWeeklySchedules != null ? scheduleController.allWeeklySchedules.length : 0,
-                                                          itemBuilder: (context,index){
-                                                            items = scheduleController.allWeeklySchedules[index];
-                                                            return Padding(
-                                                              padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                              child: SlideInUp(
-                                                                animate: true,
-                                                                child: Card(
-                                                                    elevation: 12,
-                                                                    shape: RoundedRectangleBorder(
-                                                                      borderRadius: BorderRadius.circular(12),
-                                                                    ),
-                                                                    child: ListTile(
-                                                                        onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allWeeklySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                          // Navigator.pop(context);
-                                                                        },
-                                                                        leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                        subtitle: Padding(
-                                                                          padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                              Text(items['date_scheduled']),
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                    )
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }
-                                                      )
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                          Get.to(() => const WeeklySchedules());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -979,62 +725,7 @@ class _DriverHomeState extends State<DriverHome> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: (){
-                                          showMaterialModalBottomSheet(
-                                            context: context,
-                                            isDismissible: true,
-                                            shape: const RoundedRectangleBorder(
-                                                borderRadius:
-                                                BorderRadius.vertical(
-                                                    top: Radius.circular(
-                                                        25.0))),
-                                            bounce: true,
-                                            builder: (context) => SingleChildScrollView(
-                                              controller: ModalScrollController.of(context),
-                                              child: Column(
-                                                children: [
-                                                  SizedBox(
-                                                      height: 600,
-                                                      child:  ListView.builder(
-                                                          itemCount: scheduleController.allMonthlySchedules != null ? scheduleController.allMonthlySchedules.length : 0,
-                                                          itemBuilder: (context,index){
-                                                            items = scheduleController.allMonthlySchedules[index];
-                                                            return Padding(
-                                                              padding: const EdgeInsets.only(left: 10, right: 10,),
-                                                              child: SlideInUp(
-                                                                animate: true,
-                                                                child: Card(
-                                                                    elevation: 12,
-                                                                    shape: RoundedRectangleBorder(
-                                                                      borderRadius: BorderRadius.circular(12),
-                                                                    ),
-                                                                    child: ListTile(
-                                                                        onTap: (){
-                                                                          Get.to(()=> ScheduleDetail(slug:scheduleController.allMonthlySchedules[index]['slug'],id:scheduleController.allSchedules[index]['id'].toString()));
-                                                                          // Navigator.pop(context);
-                                                                        },
-                                                                        leading: const Icon(Icons.access_time_filled),
-                                                                        title: Text(items['get_passenger_name'],style:const TextStyle(fontWeight: FontWeight.bold)),
-                                                                        subtitle: Padding(
-                                                                          padding: const EdgeInsets.only(top:10.0),
-                                                                          child: Column(
-                                                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                                                            children: [
-                                                                              Text("${items['pickup_location']} ➸ ${items['drop_off_location']}"),
-                                                                              Text(items['date_scheduled']),
-                                                                            ],
-                                                                          ),
-                                                                        )
-                                                                    )
-                                                                ),
-                                                              ),
-                                                            );
-                                                          }
-                                                      )
-                                                  ),
-                                                ],
-                                              ),
-                                            ),
-                                          );
+                                         Get.to(()=> const MonthlySchedules());
                                         },
                                         child: ClipRRect(
                                           borderRadius: BorderRadius.circular(12),
@@ -1067,9 +758,7 @@ class _DriverHomeState extends State<DriverHome> {
                                   ],
                                 ),
                               ),
-
                               const SizedBox(height: 10,),
-
                             ],
                           ),
                         ],
@@ -1080,6 +769,12 @@ class _DriverHomeState extends State<DriverHome> {
               ),
             )
           ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Get.to(() => const MySalaries());
+          },
+          child: Image.asset("assets/images/salary.png",width:40,height:40),
         ),
       ),
 

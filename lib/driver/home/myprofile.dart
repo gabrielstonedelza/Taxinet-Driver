@@ -11,6 +11,7 @@ import "package:get/get.dart";
 
 import '../../g_controllers/user/user_controller.dart';
 import '../../views/login/newlogin.dart';
+import 'mysalaries.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({Key? key}) : super(key: key);
@@ -228,7 +229,14 @@ class _MyProfileState extends State<MyProfile> {
                 ],
               ),
             ),
-          )
+          ),
+        floatingActionButton: FloatingActionButton(
+
+          onPressed: () {
+            Get.to(() => const MySalaries());
+          },
+          child: Image.asset("assets/images/salary.png",width:40,height:40),
+        ),
       ),
     );
   }

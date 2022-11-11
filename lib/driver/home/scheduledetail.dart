@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math';
+import 'package:taxinet_driver/driver/home/privatechat.dart';
 import 'package:url_launcher/url_launcher.dart';
 import "package:flutter/material.dart";
 import 'package:flutter/services.dart';
@@ -17,7 +18,7 @@ import 'package:get/get.dart';
 import '../../controllers/schedulescontroller.dart';
 import '../../sendsms.dart';
 import '../../widgets/shimmers/shimmerwidget.dart';
-import 'nointernetconnection.dart';
+import '../newchat.dart';
 
 enum PaymentMethodEnum { wallet, cash }
 
@@ -137,6 +138,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
   bool rideStarted = false;
   String drop_off_lat = "";
   String drop_off_lng = "";
+  String passengerUsername = "";
   final SendSmsController sendSms = SendSmsController();
 
   Future<void> getDetailSchedule() async {
@@ -164,6 +166,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
       price = jsonData['price'];
       charge = jsonData['charge'];
       passengerId = jsonData['passenger'].toString();
+      passengerUsername = jsonData['passenger_username'];
       passengerPhoneNumber = jsonData['get_passenger_number'];
       scheduleRideId = jsonData['id'].toString();
     }
@@ -181,6 +184,11 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
     else{
       throw 'Could not launch $googleMapUrl';
     }
+  }
+
+  void _openGoogleMap(String lat,String lng)async{
+    await Future.delayed(const Duration(seconds: 4));
+    openMap(lat,lng);
   }
 
   @override
@@ -237,9 +245,27 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
           elevation: 0,
           leading: IconButton(
               onPressed: () {
-                Get.back();
+                tripStarted ?
+                  Get.snackbar("Sorry", "Please end trip before leaving this screen",
+                      colorText: defaultTextColor1,
+                      snackPosition: SnackPosition.BOTTOM,
+                      duration: const Duration(seconds:5),
+                      backgroundColor: Colors.red) : Get.back();
+
               },
               icon: const Icon(Icons.arrow_back, color: defaultTextColor2)),
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right:18.0),
+              child: IconButton(
+                onPressed: (){
+                  // Get.to(()=> PrivateChat(passengerUsername:passengerUsername,receiverId:passengerId));
+                  Get.to(()=> NewChat(receiverUsername:passengerUsername,receiverId:passengerId,receiverPhone:passengerPhoneNumber));
+                },
+                icon: Image.asset("assets/images/chat.png",width:40,height:40)
+              ),
+            )
+          ],
         ),
         body: isLoading
             ? const Center(
@@ -355,7 +381,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                                                   _currentSelectedPaymentMethod,
                                                   timeElapsed);
                                               if (scheduleType ==
-                                                  "One Time") {
+                                                  "Short Trip") {
                                                 controller.updateRide(
                                                     passengerId, id);
                                               }
@@ -476,7 +502,6 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                                                         ))
                                                       : RawMaterialButton(
                                                           onPressed: () {
-
                                                             setState(() {
                                                               sentOTP = true;
                                                               String telnum = passengerPhoneNumber;
@@ -1151,7 +1176,8 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                               id);
                       // //  start timer here
                       startTimer();
-                      openMap(drop_off_lat, drop_off_lng);
+                      _openGoogleMap(drop_off_lat, drop_off_lng);
+                      // openMap(drop_off_lat, drop_off_lng);
                     }
                     else{
                       Get.snackbar("Number Error", "invalid number",
