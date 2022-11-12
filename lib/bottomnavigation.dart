@@ -8,12 +8,15 @@ import 'package:get_storage/get_storage.dart';
 
 import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:taxinet_driver/sendsms.dart';
 import 'controllers/notificationController.dart';
 import 'driver/home/accountblocked.dart';
+import 'driver/home/closeappfortheday.dart';
 import 'driver/home/myprofile.dart';
 import 'driver/home/pages/inventories.dart';
 import 'driver/home/pages/notifications.dart';
 import 'driver/home/pages/driverHome.dart';
+import 'g_controllers/user/user_controller.dart';
 
 
 class MyBottomNavigationBar extends StatefulWidget {
@@ -32,11 +35,16 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   bool hasInternet = false;
   late StreamSubscription internetSubscription;
   NotificationController notificationController = Get.find();
+  final UserController userController = Get.find();
   late List allBlockedUsers = [];
   late List blockedUsernames = [];
   bool isBlocked = false;
   bool isLoading = true;
   late Timer _timer;
+  bool isClosingTime = false;
+  bool hasAlertLocked = false;
+  int alertLockCount = 0;
+  int alertUnLockCount = 0;
 
   fetchBlockedAgents()async{
     const url = "https://fnetghana.xyz/get_blocked_users/";
@@ -65,6 +73,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     Notifications(),
     const MyProfile(),
   ];
+  final SendSmsController sendSms = SendSmsController();
 
   void onSelectedIndex(int index){
     setState(() {
@@ -72,6 +81,55 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     });
   }
 
+  void checkTheTime(){
+    var hour = DateTime.now().hour;
+    switch (hour) {
+      case 19:
+        String driversPhone = userController.phoneNumber;
+        driversPhone = driversPhone.replaceFirst("0", '+233');
+        if (alertLockCount == 0){
+          sendSms.sendMySms(driversPhone, "Taxinet",
+              "Attention!,please be advised, your car will be locked in one hour time,thank you.");
+        }
+        setState(() {
+          alertLockCount = 1;
+        });
+
+        break;
+      case 00:
+        setState(() {isClosingTime = true;});
+        String driversPhone = userController.phoneNumber;
+        driversPhone = driversPhone.replaceFirst("0", '+233');
+        sendSms.sendMySms(driversPhone, "Taxinet",
+            "Attention!,your car is locked.");
+
+        // function to lock car
+        String trackerSim = userController.driversTrackerSim;
+        trackerSim = trackerSim.replaceFirst("0", '+233');
+        sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
+        break;
+      case 01:
+        setState(() {isClosingTime = true;});
+        break;
+      case 02:
+        setState(() {isClosingTime = true;});
+        break;
+      case 03:
+        setState(() {isClosingTime = true;});
+        break;
+      case 04:
+        String driversPhone = userController.phoneNumber;
+        driversPhone = driversPhone.replaceFirst("0", '+233');
+        if (alertUnLockCount == 0){
+          sendSms.sendMySms(driversPhone, "Taxinet",
+              "Hi good morning,your app is now accessible,please make payment and unlock your car.Thank you.");
+        }
+        setState(() {
+          alertUnLockCount = 1;
+        });
+        break;
+    }
+  }
 
 
   @override
@@ -92,6 +150,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     fetchBlockedAgents();
     _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
       fetchBlockedAgents();
+      checkTheTime();
     });
   }
 
@@ -159,7 +218,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
               ],
             ),
           ),
-          body: screens[selectedIndex],
+          body: isClosingTime ? const CloseAppForDay() : screens[selectedIndex],
         )
     );
   }

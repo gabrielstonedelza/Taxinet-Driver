@@ -34,6 +34,7 @@ class UserController extends GetxController {
   String phoneNumber = "";
   String fullName = "";
   String uniqueCode = "";
+  String driversTrackerSim = "";
   late bool verified;
   bool isVerified = false;
   late String updateUserName;
@@ -353,6 +354,7 @@ class UserController extends GetxController {
           email = i['get_drivers_email'];
           phoneNumber = i['get_drivers_phone_number'];
           fullName = i['get_drivers_full_name'];
+          driversTrackerSim = i['get_driver_tracker_sim_number'];
           driversLicense = i['get_drivers_license'];
           licenseExpiration = i['license_expiration_date'];
           licensePlate = i['license_plate'];

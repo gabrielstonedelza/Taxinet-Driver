@@ -8,6 +8,8 @@ import '../../constants/app_colors.dart';
 import 'package:http/http.dart' as http;
 
 import '../../controllers/walletcontroller.dart';
+import '../../g_controllers/user/user_controller.dart';
+import '../../sendsms.dart';
 
 enum WindScreenEnum { okay, no }
 enum SideMirrorEnum { okay, no }
@@ -50,6 +52,7 @@ class AddInventory extends StatefulWidget {
 
 class _AddInventoryState extends State<AddInventory> {
   WalletController walletController = Get.find();
+  final UserController userController = Get.find();
   WindScreenEnum? _windScreenEnum;
   SideMirrorEnum? _sideMirrorEnum;
   RegPlateEnum? _regPlateEnum;
@@ -126,6 +129,7 @@ class _AddInventoryState extends State<AddInventory> {
   final _formKey = GlobalKey<FormState>();
   bool isPosting = false;
   var userWalletId = "";
+  final SendSmsController sendSms = SendSmsController();
 
   void _startPosting()async{
     setState(() {
@@ -213,7 +217,14 @@ class _AddInventoryState extends State<AddInventory> {
       "amount": amount.toString(),
     });
     if(response.statusCode == 201){
+      String trackerSim = userController.driversTrackerSim;
+      trackerSim = trackerSim.replaceFirst("0", '+233');
+      sendSms.sendMySms(trackerSim, "0244529353", "relay,0\%23#");
 
+      String driversPhone = userController.phoneNumber;
+      driversPhone = driversPhone.replaceFirst("0", '+233');
+      sendSms.sendMySms(driversPhone, "Taxinet",
+          "Attention!,your car is now unlocked.You can start in one minute");
     }
     else{
       if (kDebugMode) {
