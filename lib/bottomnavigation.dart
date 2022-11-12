@@ -102,7 +102,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         driversPhone = driversPhone.replaceFirst("0", '+233');
         sendSms.sendMySms(driversPhone, "Taxinet",
             "Attention!,your car is locked.");
-
         // function to lock car
         String trackerSim = userController.driversTrackerSim;
         trackerSim = trackerSim.replaceFirst("0", '+233');
