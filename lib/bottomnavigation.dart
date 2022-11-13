@@ -10,6 +10,7 @@ import 'package:get/get.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:taxinet_driver/sendsms.dart';
 import 'controllers/notificationController.dart';
+import 'controllers/notifications/localnotification_manager.dart';
 import 'driver/home/accountblocked.dart';
 import 'driver/home/closeappfortheday.dart';
 import 'driver/home/myprofile.dart';
@@ -45,6 +46,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   bool hasAlertLocked = false;
   int alertLockCount = 0;
   int alertUnLockCount = 0;
+  int alertLock = 0;
 
   fetchBlockedAgents()async{
     const url = "https://fnetghana.xyz/get_blocked_users/";
@@ -84,7 +86,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   void checkTheTime(){
     var hour = DateTime.now().hour;
     switch (hour) {
-      case 19:
+      case 23:
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');
         if (alertLockCount == 0){
@@ -100,12 +102,19 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         setState(() {isClosingTime = true;});
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');
-        sendSms.sendMySms(driversPhone, "Taxinet",
-            "Attention!,your car is locked.");
         // function to lock car
         String trackerSim = userController.driversTrackerSim;
         trackerSim = trackerSim.replaceFirst("0", '+233');
-        sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
+
+        if (alertLock == 0){
+          // sendSms.sendMySms(driversPhone, "Taxinet",
+          //     "Attention!,your car is locked.");
+          sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
+          localNotificationManager.showCarLockNotification("Car Locked", "Your car is locked and will be unlocked at working hours.");
+        }
+        setState(() {
+          alertLock = 1;
+        });
         break;
       case 01:
         setState(() {isClosingTime = true;});
@@ -120,8 +129,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');
         if (alertUnLockCount == 0){
-          sendSms.sendMySms(driversPhone, "Taxinet",
-              "Hi good morning,your app is now accessible,please make payment and unlock your car.Thank you.");
+          localNotificationManager.showCarUnLockNotification("App Unlocked", "Hi good morning,your app is now accessible,please make payment and unlock your car.Thank you.");
         }
         setState(() {
           alertUnLockCount = 1;

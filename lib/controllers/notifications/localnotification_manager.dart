@@ -87,6 +87,58 @@ class LocalNotificationManager{
     var platformChannel = NotificationDetails(android: androidChannel,iOS: iosChannel);
     await flutterLocalNotificationsPlugin.show(0,title,body,platformChannel,payload: "New Payload");
   }
+
+//  send drivers car lock  notifications
+  setOnCarLockNotificationReceive(Function onNotificationReceive){
+    didReceiveLocalNotificationSubject.listen((notification) {
+      onNotificationReceive(notification);
+    });
+  }
+  setOnCarLockNotificationClick(Function onNotificationClick)async{
+    await flutterLocalNotificationsPlugin.initialize(initSetting,onSelectNotification: (String? payload)async{
+      onNotificationClick(payload);
+    });
+  }
+
+  Future<void> showCarLockNotification(String? title,String? body) async{
+    var androidChannel = const AndroidNotificationDetails(
+        "CHANNEL_ID",
+        "CHANNEL_NAME",
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound("horn1")
+    );
+    var iosChannel = const IOSNotificationDetails();
+    var platformChannel = NotificationDetails(android: androidChannel,iOS: iosChannel);
+    await flutterLocalNotificationsPlugin.show(0,title,body,platformChannel,payload: "New Payload");
+  }
+
+  //  send drivers car unlock  notifications
+  setOnCarUnLockNotificationReceive(Function onNotificationReceive){
+    didReceiveLocalNotificationSubject.listen((notification) {
+      onNotificationReceive(notification);
+    });
+  }
+  setOnCarUnLockNotificationClick(Function onNotificationClick)async{
+    await flutterLocalNotificationsPlugin.initialize(initSetting,onSelectNotification: (String? payload)async{
+      onNotificationClick(payload);
+    });
+  }
+
+  Future<void> showCarUnLockNotification(String? title,String? body) async{
+    var androidChannel = const AndroidNotificationDetails(
+        "CHANNEL_ID",
+        "CHANNEL_NAME",
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        sound: RawResourceAndroidNotificationSound("horn1")
+    );
+    var iosChannel = const IOSNotificationDetails();
+    var platformChannel = NotificationDetails(android: androidChannel,iOS: iosChannel);
+    await flutterLocalNotificationsPlugin.show(0,title,body,platformChannel,payload: "New Payload");
+  }
 }
 
 LocalNotificationManager localNotificationManager = LocalNotificationManager.init();

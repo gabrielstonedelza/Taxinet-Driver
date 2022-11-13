@@ -261,12 +261,30 @@ class _DriverHomeState extends State<DriverHome> {
     localNotificationManager
         .setOnRideRequestNotificationClick(onRideRequestNotificationClick);
 
+    localNotificationManager.setOnCarLockNotificationReceive(onCarLockNotification);
+    localNotificationManager.setOnCarLockNotificationClick(onCarLockNotificationClick);
+
+    localNotificationManager.setOnCarUnLockNotificationReceive(onCarUnLockNotification);
+    localNotificationManager.setOnCarUnLockNotificationClick(onCarUnLockNotificationClick);
+
   }
 
   //notifications localNotificationManager
   onRideRequestNotification(ReceiveNotification notification) {}
 
   onRideRequestNotificationClick(String payload) {
+    Get.to(() => Notifications());
+  }
+
+  onCarLockNotification(ReceiveNotification notification) {}
+
+  onCarLockNotificationClick(String payload) {
+    Get.to(() => Notifications());
+  }
+
+  onCarUnLockNotification(ReceiveNotification notification) {}
+
+  onCarUnLockNotificationClick(String payload) {
     Get.to(() => Notifications());
   }
 
@@ -531,7 +549,7 @@ class _DriverHomeState extends State<DriverHome> {
                                   child: Text("Schedules",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: defaultTextColor2),)
                               ),
                               const SizedBox(height: 10,),
-                              const SizedBox(height: 10,),
+
                               Padding(
                                 padding: const EdgeInsets.all(18.0),
                                 child: Row(
