@@ -760,7 +760,7 @@ class _DriverHomeState extends State<DriverHome> {
                                                     children: [
                                                       const Icon(FontAwesomeIcons.fire,color: primaryColor,),
                                                       GetBuilder<ScheduleController>(builder: (_){
-                                                        return Text("${scheduleController.allWeeklySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
+                                                        return Text("${scheduleController.allMonthlySchedules.length}",style: const TextStyle(fontWeight: FontWeight.bold,fontSize: 20,color: pearl),);
                                                       })
                                                     ],
                                                   ),

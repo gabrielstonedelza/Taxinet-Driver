@@ -12,22 +12,27 @@ import 'package:grouped_list/grouped_list.dart';
 import 'package:http/http.dart' as http;
 
 import '../../constants/app_colors.dart';
+import 'home/updateride.dart';
 
 class NewChat extends StatefulWidget {
   final receiverId;
   final receiverUsername;
   final receiverPhone;
-  const NewChat({Key? key,required this.receiverId,required this.receiverUsername,required this.receiverPhone}) : super(key: key);
+  final passenger;
+  final rideId;
+  const NewChat({Key? key,required this.receiverId,required this.receiverUsername,required this.receiverPhone,required this.passenger, required this.rideId}) : super(key: key);
 
   @override
-  State<NewChat> createState() => _NewChatState(receiverId:this.receiverId,receiverUsername:this.receiverUsername,receiverPhone:this.receiverPhone);
+  State<NewChat> createState() => _NewChatState(receiverId:this.receiverId,receiverUsername:this.receiverUsername,receiverPhone:this.receiverPhone,passenger:this.passenger,rideId:this.rideId);
 }
 
 class _NewChatState extends State<NewChat> {
   final receiverId;
   final receiverUsername;
   final receiverPhone;
-  _NewChatState({required this.receiverId,required this.receiverUsername,required this.receiverPhone});
+  final passenger;
+  final rideId;
+  _NewChatState({required this.receiverId,required this.receiverUsername,required this.receiverPhone,required this.passenger, required this.rideId});
   _callNumber(String phoneNumber) async {
     bool? res = await FlutterPhoneDirectCaller.callNumber(phoneNumber);
   }
@@ -121,6 +126,12 @@ class _NewChatState extends State<NewChat> {
           title: Text(receiverUsername),
           actions: [
             IconButton(
+                onPressed: (){
+                  Get.to(() => UpdateRequest(passenger: passenger, ride: rideId));
+                },
+                icon: Image.asset("assets/images/verified.png",width:40,height:40,fit:BoxFit.cover)
+            ),
+            IconButton(
               onPressed: (){
                 _callNumber(receiverPhone);
               },
@@ -131,55 +142,6 @@ class _NewChatState extends State<NewChat> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children:  [
-          // Expanded(
-          //   child: Container(
-          //     padding: const EdgeInsets.only(left:25,right: 25,top:25),
-          //     width: double.infinity,
-          //     decoration: const BoxDecoration(
-          //         borderRadius: BorderRadius.only(
-          //             topLeft: Radius.circular(45),
-          //             topRight: Radius.circular(45)
-          //         ),
-          //         color: Colors.white
-          //     ),
-          //     child: ListView.builder(
-          //         physics: const BouncingScrollPhysics(),
-          //         itemCount: privateMessages != null ? privateMessages.length : 0,
-          //         itemBuilder: (context,index){
-          //           items = privateMessages[index];
-          //           return Row(
-          //             mainAxisAlignment: items['sender'] == profileId ? MainAxisAlignment.end : MainAxisAlignment.center,
-          //             crossAxisAlignment: CrossAxisAlignment.end,
-          //             children: [
-          //               items['get_senders_username'] == username ?  CircleAvatar(
-          //                 backgroundImage: NetworkImage(items['get_sender_profile_pic']),
-          //                 radius: 20,
-          //               ) : Container(),
-          //               Flexible(
-          //                   child: Container(
-          //                       margin: const EdgeInsets.only(left:10, right:10,top:20),
-          //                       padding: const EdgeInsets.all(20),
-          //                       decoration:BoxDecoration(
-          //                           color: Colors.indigo.shade100,
-          //                           borderRadius:  items['get_senders_username'] == username ? const BorderRadius.only(
-          //                               topLeft: Radius.circular(30),
-          //                               topRight: Radius.circular(30),
-          //                               bottomLeft: Radius.circular(30)
-          //                           ) : const BorderRadius.only(
-          //                               topLeft: Radius.circular(30),
-          //                               topRight: Radius.circular(30),
-          //                               bottomRight: Radius.circular(30)
-          //                           )
-          //                       ),
-          //                       child: Text(items['message'])
-          //                   )
-          //               )
-          //             ],
-          //           );
-          //         }
-          //     ),
-          //   ),
-          // ),
           Expanded(
             child: GroupedListView<dynamic, String>(
               padding: const EdgeInsets.all(8),

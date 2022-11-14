@@ -122,7 +122,6 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
   String passengerPic = "";
   String passengerPhoneNumber = "";
   String scheduleType = "";
-  String schedulePriority = "";
   String rideType = "";
   String pickUpLocation = "";
   String dropOffLocation = "";
@@ -136,8 +135,10 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
   String scheduleRideId = "";
   String charge = "";
   bool rideStarted = false;
-  String drop_off_lat = "";
-  String drop_off_lng = "";
+  String dropOffLat = "";
+  String dropOffLng = "";
+  String pickUpLat = "";
+  String pickUpLng = "";
   String passengerUsername = "";
   final SendSmsController sendSms = SendSmsController();
 
@@ -152,8 +153,10 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
       final codeUnits = response.body;
       var jsonData = jsonDecode(codeUnits);
       passengerWithSchedule = jsonData['get_passenger_name'];
-      drop_off_lat = jsonData['drop_off_lat'];
-      drop_off_lng = jsonData['drop_off_lng'];
+      dropOffLat = jsonData['drop_off_lat'];
+      dropOffLng = jsonData['drop_off_lng'];
+      pickUpLat = jsonData['pickup_lat'];
+      pickUpLng = jsonData['pickup_lng'];
       scheduleType = jsonData['schedule_type'];
       rideType = jsonData['ride_type'];
       pickUpLocation = jsonData['pickup_location'];
@@ -177,7 +180,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
 
   Future<void> openMap(String lat,String lng)async {
     // final Uri _url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$drop_off_lat,$drop_off_lng');
-    String googleMapUrl = 'https://www.google.com/maps/search/?api=1&query=$drop_off_lat,$drop_off_lng';
+    String googleMapUrl = 'https://www.google.com/maps/search/?api=1&query=$dropOffLat,$dropOffLng';
     if (await canLaunch(googleMapUrl)) {
       await launch(googleMapUrl);
     }
@@ -255,15 +258,21 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
               },
               icon: const Icon(Icons.arrow_back, color: defaultTextColor2)),
           actions: [
-            Padding(
+            scheduleType == "Short Trip" ? Padding(
               padding: const EdgeInsets.only(right:18.0),
               child: IconButton(
                 onPressed: (){
                   // Get.to(()=> PrivateChat(passengerUsername:passengerUsername,receiverId:passengerId));
-                  Get.to(()=> NewChat(receiverUsername:passengerUsername,receiverId:passengerId,receiverPhone:passengerPhoneNumber));
+                  Get.to(()=> NewChat(receiverUsername:passengerUsername,receiverId:passengerId,receiverPhone:passengerPhoneNumber,rideId:id,passenger:passengerId));
                 },
                 icon: Image.asset("assets/images/chat.png",width:40,height:40)
               ),
+            ) : Container(),
+            TextButton(
+              onPressed: (){
+                _openGoogleMap(pickUpLat, pickUpLng);
+              },
+              child: const Text("To Passenger")
             )
           ],
         ),
@@ -327,7 +336,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                                     padding:
                                         const EdgeInsets.only(bottom: 10.0),
                                     child: TextFormField(
-                                      controller: _priceController,
+                                      controller: price == "" ? _priceController : _priceController..text = price,
                                       // cursorColor:
                                       // primaryColor,
                                       cursorRadius:
@@ -1176,7 +1185,7 @@ class _ScheduleDetailState extends State<ScheduleDetail> {
                               id);
                       // //  start timer here
                       startTimer();
-                      _openGoogleMap(drop_off_lat, drop_off_lng);
+                      _openGoogleMap(dropOffLat, dropOffLng);
                       // openMap(drop_off_lat, drop_off_lng);
                     }
                     else{

@@ -154,7 +154,7 @@ class ScheduleController extends GetxController{
   Future<void> getDriversShortTripsSchedules(String token) async {
     try {
       isLoading = true;
-      const walletUrl = "https://taxinetghana.xyz/get_driver_scheduled_for_one_time/";
+      const walletUrl = "https://taxinetghana.xyz/get_driver_scheduled_for_short_trip/";
       var link = Uri.parse(walletUrl);
       http.Response response = await http.get(link, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -220,7 +220,7 @@ class ScheduleController extends GetxController{
   Future<void> getDriversWeeklySchedules(String token) async {
     try {
       isLoading = true;
-      const walletUrl = "https://taxinetghana.xyz/get_driver_scheduled_for_days/";
+      const walletUrl = "https://taxinetghana.xyz/get_driver_scheduled_for_weekly/";
       var link = Uri.parse(walletUrl);
       http.Response response = await http.get(link, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
