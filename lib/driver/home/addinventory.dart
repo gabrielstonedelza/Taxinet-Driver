@@ -194,6 +194,7 @@ class _AddInventoryState extends State<AddInventory> {
           colorText: defaultTextColor1);
       updateDriversWallet();
       processPaymentToday();
+      addToDriverCommissionToday();
       Get.offAll(() => const MyBottomNavigationBar());
     }
     else{
@@ -250,6 +251,27 @@ class _AddInventoryState extends State<AddInventory> {
     else{
       if (kDebugMode) {
         print("This is coming from update drivers payment ${response.body}");
+      }
+    }
+  }
+
+  addToDriverCommissionToday()async {
+    const requestUrl = "https://taxinetghana.xyz/add_driver_commission/";
+    final myLink = Uri.parse(requestUrl);
+    final response = await http.post(myLink, headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+      'Accept': 'application/json',
+      "Authorization": "Token $uToken"
+    }, body: {
+      // "driver": walletController.driver,
+      "amount": "8.334",
+    });
+    if(response.statusCode == 201){
+
+    }
+    else{
+      if (kDebugMode) {
+        print("This is coming from the process add to drivers payment ${response.body}");
       }
     }
   }

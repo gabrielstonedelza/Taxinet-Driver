@@ -230,13 +230,13 @@ class _MyProfileState extends State<MyProfile> {
               ),
             ),
           ),
-        floatingActionButton: FloatingActionButton(
-
-          onPressed: () {
-            Get.to(() => const MySalaries());
-          },
-          child: Image.asset("assets/images/salary.png",width:40,height:40),
-        ),
+        // floatingActionButton: FloatingActionButton(
+        //
+        //   onPressed: () {
+        //     Get.to(() => const MySalaries());
+        //   },
+        //   child: Image.asset("assets/images/salary.png",width:40,height:40),
+        // ),
       ),
     );
   }

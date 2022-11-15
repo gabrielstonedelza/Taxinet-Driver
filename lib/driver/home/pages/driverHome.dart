@@ -9,6 +9,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import '../../../constants/app_colors.dart';
+import '../../../controllers/commissioncontroller.dart';
 import '../../../controllers/mapcontroller.dart';
 import '../../../controllers/notificationController.dart';
 import '../../../controllers/notifications/localnotification_manager.dart';
@@ -56,6 +57,7 @@ class _DriverHomeState extends State<DriverHome> {
   WalletController walletController = Get.find();
 
   ScheduleController scheduleController = Get.find();
+  CommissionController commissionController = Get.find();
 
   final MapController _mapController = Get.find();
   final SalaryController salaryController = Get.find();
@@ -222,6 +224,7 @@ class _DriverHomeState extends State<DriverHome> {
     userController.getAllDrivers();
     userController.getAllPassengers();
     salaryController.getAllSalary(uToken);
+    commissionController.getAllCommissions(uToken);
     _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
       scheduleController.getActiveSchedules(uToken);
       scheduleController.getAllSchedules(uToken);
@@ -237,6 +240,7 @@ class _DriverHomeState extends State<DriverHome> {
       notificationController.getAllNotifications(uToken);
       notificationController.getAllUnReadNotifications(uToken);
       salaryController.getAllSalary(uToken);
+      commissionController.getAllCommissions(uToken);
     });
 
     getAllTriggeredNotifications();

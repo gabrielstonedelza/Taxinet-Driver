@@ -8,6 +8,7 @@ import 'package:taxinet_driver/g_controllers/user/user_controller.dart';
 import 'package:taxinet_driver/splash.dart';
 import 'package:get/get.dart';
 
+import 'controllers/commissioncontroller.dart';
 import 'controllers/inventorycontroller.dart';
 import 'controllers/mapcontroller.dart';
 import 'controllers/notificationController.dart';
@@ -29,6 +30,7 @@ void main() async{
   Get.put(InventoryController());
   Get.put(MapController());
   Get.put(SalaryController());
+  Get.put(CommissionController());
   runApp(const MyApp());
 }
 

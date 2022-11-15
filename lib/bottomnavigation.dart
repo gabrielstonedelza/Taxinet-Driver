@@ -13,6 +13,7 @@ import 'controllers/notificationController.dart';
 import 'controllers/notifications/localnotification_manager.dart';
 import 'driver/home/accountblocked.dart';
 import 'driver/home/closeappfortheday.dart';
+import 'driver/home/mycommissions.dart';
 import 'driver/home/myprofile.dart';
 import 'driver/home/pages/inventories.dart';
 import 'driver/home/pages/notifications.dart';
@@ -74,6 +75,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     const Inventories(),
     Notifications(),
     const MyProfile(),
+    const MyCommissions()
   ];
   final SendSmsController sendSms = SendSmsController();
 
@@ -175,9 +177,8 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
             body: AccountBlockNotification()
         ) :Scaffold(
           bottomNavigationBar: NavigationBarTheme(
-
             data: NavigationBarThemeData(
-                indicatorColor: Colors.blue.shade100,
+                // indicatorColor: Colors.blue.shade100,
                 labelTextStyle:  MaterialStateProperty.all(
                     const TextStyle(fontSize:14, fontWeight: FontWeight.bold)
                 )
@@ -196,10 +197,11 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
                   selectedIcon: Icon(Icons.home),
                   label: "Home",
                 ),
+
                 const NavigationDestination(
                   icon: Icon(Icons.checklist_rtl_outlined),
                   selectedIcon: Icon(Icons.checklist_rtl_rounded),
-                  label: "Inventories",
+                  label: "Checks",
                 ),
                 GetBuilder<NotificationController>(builder: (controller){
                   return NavigationDestination(
@@ -214,13 +216,18 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
                         badgeContent: Text("${notificationController.notRead.length}",style: const TextStyle(fontWeight: FontWeight.bold,color: Colors.white,fontSize:15)),
                         child: const Icon(Icons.notifications_outlined)),
                     selectedIcon: const Icon(Icons.notifications),
-                    label: "Notifications",
+                    label: "Alerts",
                   );
                 }),
                 const NavigationDestination(
                   icon: Icon(Icons.person_outline),
                   selectedIcon: Icon(Icons.person),
                   label: "Profile",
+                ),
+                NavigationDestination(
+                  icon: Image.asset("assets/images/percentage.png",width:40,height:40,fit:BoxFit.cover),
+                  selectedIcon: Image.asset("assets/images/percentage.png",width:40,height:40,fit:BoxFit.cover),
+                  label: "Comm",
                 ),
               ],
             ),
