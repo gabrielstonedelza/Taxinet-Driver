@@ -127,14 +127,6 @@ class _MyCommissionsState extends State<MyCommissions> {
             ],
           ),
           backgroundColor:primaryColor,
-          // actions: [
-          //   Padding(
-          //     padding: const EdgeInsets.only(top:18.0,right:18),
-          //     child: GetBuilder<CommissionController>(builder:(controller){
-          //       return Text("₵${controller.totalCommissions.toString()}",style:const TextStyle(fontWeight: FontWeight.bold,fontSize:20,color:Colors.red));
-          //     }),
-          //   )
-          // ],
         ),
         backgroundColor: primaryColor,
         body: GetBuilder<CommissionController>(builder:(controller){
@@ -195,7 +187,6 @@ class _MyCommissionsState extends State<MyCommissions> {
                       padding: const EdgeInsets.all(18.0),
                       child: ListView(
                         children: [
-
                           Center(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
