@@ -264,7 +264,7 @@ class _AddInventoryState extends State<AddInventory> {
       "Authorization": "Token $uToken"
     }, body: {
       "driver": userController.driverProfileId,
-      "amount": "8.334",
+      "amount": "8.33",
     });
     if(response.statusCode == 201){
 
