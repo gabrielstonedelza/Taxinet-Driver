@@ -27,11 +27,7 @@ class WalletController extends GetxController{
     if (storage.read("username") != null) {
       username = storage.read("username");
     }
-    // getUserWallet();
-    // _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
-    //   getUserWallet();
-    //   update();
-    // });
+
   }
   Future<void> getUserWallet(String token) async {
     try {

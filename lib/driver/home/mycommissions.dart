@@ -8,6 +8,8 @@ import '../../controllers/commissioncontroller.dart';
 import '../../controllers/walletcontroller.dart';
 import 'package:http/http.dart' as http;
 
+import '../../g_controllers/user/user_controller.dart';
+
 class MyCommissions extends StatefulWidget {
 
   const MyCommissions({Key? key}) : super(key: key);
@@ -19,6 +21,7 @@ class MyCommissions extends StatefulWidget {
 class _MyCommissionsState extends State<MyCommissions> {
   final CommissionController commissionController = Get.find();
   final WalletController walletController = Get.find();
+  final UserController userController = Get.find();
   double initialWallet = 0;
   double commissionBalance = 0;
   String driver = "";
@@ -33,11 +36,10 @@ class _MyCommissionsState extends State<MyCommissions> {
       // "Authorization": "Token $uToken"
     }, body: {
       "amount" : initialWallet.toString(),
-      "user" : driver,
+      "user" : userController.driverProfileId,
       "id": walletController.walletId
     });
     if(response.statusCode == 200){
-
 
       Get.snackbar("Success", "wallet was updated",
           colorText: defaultTextColor1,
@@ -48,7 +50,7 @@ class _MyCommissionsState extends State<MyCommissions> {
     }
     else{
       if (kDebugMode) {
-        // print(response.body);
+        print(response.body);
       }
     }
   }
@@ -60,7 +62,7 @@ class _MyCommissionsState extends State<MyCommissions> {
       "Content-Type": "application/x-www-form-urlencoded",
       'Accept': 'application/json',
     }, body: {
-      "driver" : driver,
+      "driver" : userController.driverProfileId,
     });
     if(response.statusCode == 200){
     }
@@ -80,7 +82,7 @@ class _MyCommissionsState extends State<MyCommissions> {
       'Accept': 'application/json',
       // "Authorization": "Token $uToken"
     }, body: {
-      "driver": driver,
+      "driver": userController.driverProfileId,
       "amount": commissionController.totalCommissions.toString(),
     });
     if(response.statusCode == 201){
@@ -98,7 +100,7 @@ class _MyCommissionsState extends State<MyCommissions> {
     }
     else{
       if (kDebugMode) {
-        // print(response.body);
+        print(response.body);
       }
     }
   }
@@ -120,12 +122,8 @@ class _MyCommissionsState extends State<MyCommissions> {
         appBar: AppBar(
           elevation: 0,
           title: Row(
-            children: [
-              const Text("Commissions"),
-              const SizedBox(width:20),
-              GetBuilder<CommissionController>(builder:(controller){
-                return Text("₵${controller.totalCommissions.toString()}",style:const TextStyle(fontWeight: FontWeight.bold,fontSize:20,color:Colors.red));
-              }),
+            children: const [
+              Text("Commissions"),
             ],
           ),
           backgroundColor:primaryColor,
@@ -197,6 +195,16 @@ class _MyCommissionsState extends State<MyCommissions> {
                       padding: const EdgeInsets.all(18.0),
                       child: ListView(
                         children: [
+
+                          Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const Text("Commission Total: ",style: TextStyle(fontWeight: FontWeight.bold)),
+                                Text(commissionController.totalCommissions.toString(),style: const TextStyle(fontWeight: FontWeight.bold)),
+                              ],
+                            )
+                          ),
                           const SizedBox(height:10),
                           const Center(
                               child: Text("Are you sure you want to transfer your commission to your wallet?",style: TextStyle(fontSize: 20,fontWeight: FontWeight.bold))

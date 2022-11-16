@@ -263,7 +263,7 @@ class _AddInventoryState extends State<AddInventory> {
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
     }, body: {
-      // "driver": walletController.driver,
+      "driver": userController.driverProfileId,
       "amount": "8.334",
     });
     if(response.statusCode == 201){
