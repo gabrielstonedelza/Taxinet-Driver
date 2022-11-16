@@ -216,7 +216,7 @@ class _SendFromWalletToPassengerState extends State<SendFromWalletToPassenger> {
     if (storage.read("username") != null) {
       username = storage.read("username");
     }
-    userController.getAllDrivers();
+    userController.getAllUsers();
     getSendersWallet();
   }
 

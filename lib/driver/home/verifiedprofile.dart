@@ -121,26 +121,7 @@ class _VerifiedProfileState extends State<VerifiedProfile> {
                 ),
               ),
               const SizedBox(height: 30),
-              ListTile(
-                title: Padding(
-                    padding: const EdgeInsets.only(bottom:8.0),
-                    child:  Row(
-                      children: [
-                        const Text("Unique Code",style: TextStyle(fontWeight: FontWeight.bold)),
-                        const SizedBox(width: 10),
-                        Image.asset("assets/images/verified.png",width: 20,height: 20,)
-                      ],
-                    )
-                ),
-                subtitle: GetBuilder<UserController>(
-                    builder: (controller) {
-                      return userController.uniqueCode == "" ? const ShimmerWidget.rectangular(height: 20) : Text(
-                        userController.uniqueCode,
-                        style: const TextStyle(
-                            fontSize: 12),
-                      );
-                    }),
-              ),
+
               ListTile(
                 title: Padding(
                   padding: const EdgeInsets.only(bottom:8.0),

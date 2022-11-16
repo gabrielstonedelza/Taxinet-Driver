@@ -221,8 +221,8 @@ class _DriverHomeState extends State<DriverHome> {
     notificationController.getAllUnReadNotifications(uToken);
     walletController.getUserWallet(uToken);
     userController.getUserProfile(uToken);
-    userController.getAllDrivers();
-    userController.getAllPassengers();
+    userController.getAllUsers();
+    userController.getUserDetails(uToken);
     salaryController.getAllSalary(uToken);
     commissionController.getAllCommissions(uToken);
     _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
@@ -235,8 +235,8 @@ class _DriverHomeState extends State<DriverHome> {
       scheduleController.getDriversMonthlySchedules(uToken);
       walletController.getUserWallet(uToken);
       userController.getUserProfile(uToken);
-      userController.getAllDrivers();
-      userController.getAllPassengers();
+      userController.getAllUsers();
+      userController.getUserDetails(uToken);
       notificationController.getAllNotifications(uToken);
       notificationController.getAllUnReadNotifications(uToken);
       salaryController.getAllSalary(uToken);

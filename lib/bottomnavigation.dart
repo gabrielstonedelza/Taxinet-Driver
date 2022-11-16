@@ -84,9 +84,10 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       selectedIndex = index;
     });
   }
+  var hour = DateTime.now().hour;
 
   void checkTheTime(){
-    var hour = DateTime.now().hour;
+    // var hour = DateTime.now().hour;
     switch (hour) {
       case 23:
         String driversPhone = userController.phoneNumber;
@@ -98,7 +99,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         setState(() {
           alertLockCount = 1;
         });
-
         break;
       case 00:
         setState(() {isClosingTime = true;});
@@ -109,8 +109,8 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         trackerSim = trackerSim.replaceFirst("0", '+233');
 
         if (alertLock == 0){
-          // sendSms.sendMySms(driversPhone, "Taxinet",
-          //     "Attention!,your car is locked.");
+          sendSms.sendMySms(driversPhone, "Taxinet",
+              "Attention!,your car is locked.");
           sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
           localNotificationManager.showCarLockNotification("Car Locked", "Your car is locked and will be unlocked at working hours.");
         }
@@ -145,6 +145,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   void initState() {
     // TODO: implement initState
     super.initState();
+
     internetSubscription = InternetConnectionChecker().onStatusChange.listen((status){
       final hasInternet = status == InternetConnectionStatus.connected;
       setState(()=> this.hasInternet = hasInternet);

@@ -46,6 +46,7 @@ class UserController extends GetxController {
   bool hasUploadedBackCard = false;
 
   late List profileDetails = [];
+  late List profileDetails1 = [];
   late List passengerUserNames = [];
   late List driversUniqueCodes = [];
   late List allDrivers = [];
@@ -53,6 +54,8 @@ class UserController extends GetxController {
   late List passengerNames = [];
   late List passengersUniqueCodes = [];
   late List allPassengers = [];
+  late List allUsersUniqueCodes = [];
+  late List allUserNames = [];
 
   bool isLoading = true;
   bool isOpened = false;
@@ -68,25 +71,16 @@ class UserController extends GetxController {
     if (storage.read("username") != null) {
       username = storage.read("username");
     }
-    // getUserProfile();
-    // getAllDrivers();
-    // getAllPassengers();
-    // _timer = Timer.periodic(const Duration(seconds: 20), (timer) {
-    //   getUserProfile();
-    //   getAllDrivers();
-    //   getAllPassengers();
-    //   update();
-    // });
   }
 
   File? profileImageUpload;
   File? frontCard;
   File? backCard;
 
-  Future<void> getAllDrivers() async {
+  Future<void> getAllUsers() async {
     try {
       isLoading = true;
-      const profileLink = "https://taxinetghana.xyz/all_drivers_profile/";
+      const profileLink = "https://taxinetghana.xyz/all_users/";
       var link = Uri.parse(profileLink);
       http.Response response = await http.get(link, headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -95,11 +89,8 @@ class UserController extends GetxController {
         var jsonData = jsonDecode(response.body);
         allDrivers = jsonData;
         for (var i in allDrivers) {
-          if(!driversUniqueCodes.contains(i['unique_code'])){
-            driversUniqueCodes.add(i['unique_code']);
-          }
-          if(!driversNames.contains(i['get_drivers_full_name'])){
-            driversNames.add(i['get_drivers_full_name']);
+          if(!allUsersUniqueCodes.contains(i['unique_code'])){
+            allUsersUniqueCodes.add(i['unique_code']);
           }
         }
         update();
@@ -107,7 +98,7 @@ class UserController extends GetxController {
       }
       else{
         if (kDebugMode) {
-          print(response.body);
+          print("response.body");
         }
       }
     } catch (e) {
@@ -119,222 +110,6 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> getAllPassengers() async {
-    try {
-      isLoading = true;
-      const profileLink = "https://taxinetghana.xyz/all_passengers_profile/";
-      var link = Uri.parse(profileLink);
-      http.Response response = await http.get(link, headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      });
-      if (response.statusCode == 200) {
-        var jsonData = jsonDecode(response.body);
-        allPassengers = jsonData;
-        for (var i in allPassengers) {
-          if(!passengersUniqueCodes.contains(i['unique_code'])){
-            passengersUniqueCodes.add(i['unique_code']);
-          }
-          if(!passengerNames.contains(i['get_passengers_full_name'])){
-            passengerNames.add(i['get_passengers_full_name']);
-          }
-        }
-        update();
-
-      }
-      else{
-        if (kDebugMode) {
-          print(response.body);
-        }
-      }
-    } catch (e) {
-      if (kDebugMode) {
-        print(e.toString());
-      }
-    } finally {
-      isLoading = false;
-    }
-  }
-
-
-  Future getFromGalleryForProfilePic() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
-    _cropImageProfilePic(pickedFile!.path);
-  }
-
-  Future getFromGalleryForFrontCard() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
-    _cropImageFrontCard(pickedFile!.path);
-  }
-
-  Future getFromGalleryForBackCard() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.gallery, maxHeight: 1080, maxWidth: 1080);
-    _cropImageForBackCard(pickedFile!.path);
-  }
-
-  Future getFromCameraForProfilePic() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.camera, maxHeight: 1080, maxWidth: 1080);
-    _cropImageProfilePic(pickedFile!.path);
-  }
-
-  Future getFromCameraForFrontCard() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.camera, maxHeight: 1080, maxWidth: 1080);
-    _cropImageFrontCard(pickedFile!.path);
-  }
-
-  Future getFromCameraForBackCard() async {
-    PickedFile? pickedFile = await ImagePicker()
-        .getImage(source: ImageSource.camera, maxHeight: 1080, maxWidth: 1080);
-    _cropImageForBackCard(pickedFile!.path);
-  }
-
-  Future _cropImageProfilePic(filePath) async {
-    File? croppedImage = await ImageCropper()
-        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
-    if (croppedImage != null) {
-      profileImageUpload = croppedImage;
-      _uploadAndUpdateProfilePic(profileImageUpload!);
-      // getUserProfile();
-      update();
-    }
-  }
-
-  Future _cropImageForBackCard(filePath) async {
-    File? croppedImage = await ImageCropper()
-        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
-    if (croppedImage != null) {
-      backCard = croppedImage;
-      _uploadAndUpdateBackCard(backCard!);
-      update();
-      hasUploadedBackCard = true;
-    }
-  }
-
-  Future _cropImageFrontCard(filePath) async {
-    File? croppedImage = await ImageCropper()
-        .cropImage(sourcePath: filePath, maxHeight: 1080, maxWidth: 1080);
-    if (croppedImage != null) {
-      frontCard = croppedImage;
-      _uploadAndUpdateFrontCard(frontCard!);
-      update();
-      hasUploadedFrontCard = true;
-    }
-  }
-
-  void _uploadAndUpdateProfilePic(File file) async {
-    try {
-      isUpdating = true;
-      //updating user profile details
-      String fileName = file.path.split('/').last;
-      var formData1 = FormData.fromMap({
-        'profile_pic':
-        await MultipartFile.fromFile(file.path, filename: fileName),
-      });
-      var response = await dio.put(
-        'https://taxinetghana.xyz/update_driver_profile/',
-        data: formData1,
-        options: Options(headers: {
-          "Authorization": "Token $uToken",
-          "HttpHeaders.acceptHeader": "accept: application/json",
-        }, contentType: Headers.formUrlEncodedContentType),
-      );
-      if (response.statusCode != 200) {
-        Get.snackbar("Sorry", response.data.toString(),
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red);
-      } else {
-        Get.snackbar("Hurray 😀", "Your profile picture was updated",
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: primaryColor,
-            duration: const Duration(seconds: 5));
-      }
-    } on DioError catch (e) {
-      Get.snackbar("Sorry", "something went wrong,please try again later",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red);
-    } finally {
-      isUpdating = false;
-    }
-  }
-
-  void _uploadAndUpdateFrontCard(File file) async {
-    try {
-      //updating user profile details
-      String fileName = file.path.split('/').last;
-      var formData1 = FormData.fromMap({
-        'front_side_ghana_card':
-        await MultipartFile.fromFile(file.path, filename: fileName),
-      });
-      var response = await dio.put(
-        'https://taxinetghana.xyz/update_passenger_profile/',
-        data: formData1,
-        options: Options(headers: {
-          "Authorization": "Token $uToken",
-          "HttpHeaders.acceptHeader": "accept: application/json",
-        }, contentType: Headers.formUrlEncodedContentType),
-      );
-      if (response.statusCode != 200) {
-        Get.snackbar("Sorry", "Something happened. Please try again later",
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red);
-      } else {
-        Get.snackbar("Hurray 😀", "card uploaded successfully,you will be notified when verified.",
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: primaryColor,
-            duration: const Duration(seconds: 5));
-      }
-    } on DioError catch (e) {
-      Get.snackbar("Sorry", "Something happened. Please try again later",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red);
-    }
-  }
-
-  void _uploadAndUpdateBackCard(File file) async {
-    try {
-      //updating user profile details
-      String fileName = file.path.split('/').last;
-      var formData1 = FormData.fromMap({
-        'back_side_ghana_card':
-        await MultipartFile.fromFile(file.path, filename: fileName),
-      });
-      var response = await dio.put(
-        'https://taxinetghana.xyz/update_passenger_profile/',
-        data: formData1,
-        options: Options(headers: {
-          "Authorization": "Token $uToken",
-          "HttpHeaders.acceptHeader": "accept: application/json",
-        }, contentType: Headers.formUrlEncodedContentType),
-      );
-      if (response.statusCode != 200) {
-        Get.snackbar("Sorry", "something happened,please try again later",
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: Colors.red);
-      } else {
-        Get.snackbar("Hurray 😀", "card uploaded successfully,you will be notified when verified.",
-            colorText: Colors.white,
-            snackPosition: SnackPosition.BOTTOM,
-            backgroundColor: primaryColor,
-            duration: const Duration(seconds: 5));
-      }
-    } on DioError catch (e) {
-      Get.snackbar("Sorry", "something happened,please try again later",
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-          backgroundColor: Colors.red);
-    }
-  }
 
   Future<void> getUserProfile(String token) async {
     try {
@@ -365,7 +140,6 @@ class UserController extends GetxController {
           verified = i['verified'];
           driverProfileId = i['user'].toString();
           driverUsername = i['username'];
-          uniqueCode = i['unique_code'];
         }
         update();
         storage.write("verified", "Verified");
@@ -373,6 +147,38 @@ class UserController extends GetxController {
         storage.write("profile_name", fullName);
         storage.write("profile_pic", profileImage);
         storage.write("passenger_username", driverUsername);
+      }
+      else{
+        if (kDebugMode) {
+          print(response.body);
+        }
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print(e.toString());
+      }
+    } finally {
+      isLoading = false;
+    }
+  }
+
+  Future<void> getUserDetails(String token) async {
+    try {
+      isLoading = true;
+      const profileLink = "https://taxinetghana.xyz/get_user/";
+      var link = Uri.parse(profileLink);
+      http.Response response = await http.get(link, headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "Authorization": "Token $token"
+      });
+      if (response.statusCode == 200) {
+        var jsonData = jsonDecode(response.body);
+        profileDetails1 = jsonData;
+        // print(profileDetails1);
+        for (var i in profileDetails1) {
+          uniqueCode = i['unique_code'];
+        }
+        update();
       }
       else{
         if (kDebugMode) {
