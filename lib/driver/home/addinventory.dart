@@ -215,7 +215,7 @@ class _AddInventoryState extends State<AddInventory> {
     "Authorization": "Token $uToken"
     }, body: {
       // "driver": walletController.driver,
-      "amount": amount.toString(),
+      "amount": amount..toStringAsFixed(2),
     });
     if(response.statusCode == 201){
       String trackerSim = userController.driversTrackerSim;
@@ -243,7 +243,7 @@ class _AddInventoryState extends State<AddInventory> {
       "Authorization": "Token $uToken"
     }, body: {
       "user": walletController.userUpdatingWallet,
-      "amount": amount.toString(),
+      "amount": amount.toStringAsFixed(2),
     });
     if(response.statusCode == 200){
 
@@ -1727,7 +1727,8 @@ class _AddInventoryState extends State<AddInventory> {
                             isPosting = true;
                           });
                           _startPosting();
-                          if(double.parse(walletController.wallet) > amountToPay){
+                          if(double.parse(walletController.wallet) >= amountToPay){
+
                             amount = double.parse(walletController.wallet) - amountToPay;
                             if (_formKey.currentState!.validate()) {
                               if(_windScreenEnum?.name == null || _sideMirrorEnum?.name == null || _regPlateEnum?.name == null || _tirePressureEnum?.name == null || _drivingMirrorEnum?.name == null || _tireDepthEnum?.name == null || _wheelNutsEnum?.name == null || _engineOilEnum?.name == null || _fuelLevelEnum?.name == null || _breakFluidEnum?.name == null || _engineCoolantEnum?.name == null || _steeringFluidEnum?.name == null || _wiperWasherEnum?.name == null || _seatBeltsEnum?.name == null || _steeringWheelEnum?.name == null || _hornEnum?.name == null || _electricWindowsEnum?.name == null || _windScreenWiperEnum?.name == null || _headLightsEnum?.name == null || _trafficatorsEnum?.name == null || _tailLightsEnum?.name == null || _reverseLightsEnum?.name == null || _interiorLightsEnum?.name == null || _engineNoiseEnum?.name == null || _excessiveSmokeEnum?.name == null || _footBreakEnum?.name == null || _handBreakEnum?.name == null || _wheelBearingNoiseEnum?.name == null || _triangleEnum?.name == null || _fireExtinguisherEnum?.name == null || _firstAidBoxEnum?.name == null){
@@ -1740,8 +1741,6 @@ class _AddInventoryState extends State<AddInventory> {
                                 return;
                               }
                               processInventory();
-                              // processPaymentToday();
-                              // updateDriversWallet();
                             } else {
                               Get.snackbar("Error", "something went wrong.please try again later",
                                   colorText: defaultTextColor1,

@@ -62,48 +62,50 @@ class _InventoriesState extends State<Inventories> {
           )
         ],
       ),
-      body: ListView.builder(
-          itemCount: controller.inventories != null ? controller.inventories.length :0,
-          itemBuilder: (context,index){
-            items = controller.inventories[index];
-            return Column(
-              children: [
-                const SizedBox(height: 10,),
-                SlideInUp(
-                  animate: true,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 18,right: 18),
-                    child: Card(
-                      elevation: 10,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+      body: GetBuilder<InventoryController>(builder:(controller){
+        return ListView.builder(
+            itemCount: controller.inventories != null ? controller.inventories.length :0,
+            itemBuilder: (context,index){
+              items = controller.inventories[index];
+              return Column(
+                children: [
+                  const SizedBox(height: 10,),
+                  SlideInUp(
+                    animate: true,
+                    child: Padding(
+                      padding: const EdgeInsets.only(left: 18,right: 18),
+                      child: Card(
+                          elevation: 10,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child:ListTile(
+                            onTap: (){
+                              Get.to(()=> InventoryDetail(id:controller.inventories[index]['id'].toString(),date_checked:controller.inventories[index]['date_checked']));
+                            },
+                            leading: const CircleAvatar(
+                                backgroundColor: Colors.grey,
+                                foregroundColor: Colors.white,
+                                child: Icon(Icons.assessment)
+                            ),
+                            title: Padding(
+                              padding: const EdgeInsets.only(top: 10, bottom: 10.0),
+                              child: Text(items['date_checked']),
+                            ),
+                            subtitle: Padding(
+                              padding: const EdgeInsets.only(bottom: 10.0),
+                              child: Text(items['time_checked'].toString().split(".").first),
+                            ),
+                          )
                       ),
-                      child:ListTile(
-                        onTap: (){
-                          Get.to(()=> InventoryDetail(id:controller.inventories[index]['id'].toString(),date_checked:controller.inventories[index]['date_checked']));
-                        },
-                        leading: const CircleAvatar(
-                            backgroundColor: Colors.grey,
-                            foregroundColor: Colors.white,
-                            child: Icon(Icons.assessment)
-                        ),
-                        title: Padding(
-                          padding: const EdgeInsets.only(top: 10, bottom: 10.0),
-                          child: Text(items['date_checked']),
-                        ),
-                        subtitle: Padding(
-                          padding: const EdgeInsets.only(bottom: 10.0),
-                          child: Text(items['time_checked'].toString().split(".").first),
-                        ),
-                      )
                     ),
-                  ),
-                )
-              ],
-            );
+                  )
+                ],
+              );
 
-          }
-      ),
+            }
+        );
+      }),
     );
   }
 }

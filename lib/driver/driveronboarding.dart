@@ -47,7 +47,7 @@ class _DriverBoardingState extends State<DriverBoarding> {
               });
             },
             children: [
-              buildPage(primaryColor,"Rules And Regulations","Please make sure to read all rules vehicleefully."),
+              buildPage(primaryColor,"Rules And Regulations","Please make sure to read all rules and regulations carefully."),
               buildPage(primaryColor,"Daily Payment","Driver will pay upfront sales of GH₵70 by using the app wallet after filling the inventory before he can start the vehicle."),
               buildPage(primaryColor,"Report","Driver is required to report once a week for vehicle inspection."),
               buildPage(primaryColor,"Excuses & Permissions","The driver is to give a three (3) days prior notice for any excuse of work"),
