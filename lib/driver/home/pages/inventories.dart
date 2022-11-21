@@ -28,7 +28,7 @@ class _InventoriesState extends State<Inventories> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    if(double.parse(walletController.wallet) > amountToPay){
+    if(double.parse(walletController.wallet) >= amountToPay){
       setState(() {
         canPayToday = true;
       });
