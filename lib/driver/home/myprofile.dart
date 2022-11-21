@@ -11,7 +11,7 @@ import "package:get/get.dart";
 
 import '../../g_controllers/user/user_controller.dart';
 import '../../views/login/newlogin.dart';
-import 'mysalaries.dart';
+import 'mybonuses.dart';
 
 class MyProfile extends StatefulWidget {
   const MyProfile({Key? key}) : super(key: key);

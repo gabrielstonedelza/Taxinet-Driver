@@ -49,6 +49,7 @@ dependencies:
   geocoding:
   google_nav_bar: ^5.0.6
   grouped_list: ^5.1.2
+  smooth_page_indicator: ^1.0.0+2
 
 dev_dependencies:
   flutter_test:

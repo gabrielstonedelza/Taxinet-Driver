@@ -9,7 +9,7 @@ import '../../../controllers/notificationController.dart';
 import '../../../g_controllers/user/user_controller.dart';
 import '../../../widgets/shimmers/shimmerwidget.dart';
 import '../mycommissions.dart';
-import '../mysalaries.dart';
+import '../mybonuses.dart';
 import 'driverHome.dart';
 
 
@@ -76,7 +76,7 @@ class _NotificationsState extends State<Notifications> {
                               Get.to(() => DriverHome());
                             }
                             if(notificationController.allNotifications[index]['notification_title'] == "Monthly Salary Payment"){
-                              Get.to(() => const MySalaries());
+                              Get.to(() => const MyBonuses());
                             }
                             if(notificationController.allNotifications[index]['notification_title'] == "Commission Received"){
                               Get.to(() => const MyCommissions());

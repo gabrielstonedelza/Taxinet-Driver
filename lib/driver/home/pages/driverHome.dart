@@ -13,7 +13,7 @@ import '../../../controllers/commissioncontroller.dart';
 import '../../../controllers/mapcontroller.dart';
 import '../../../controllers/notificationController.dart';
 import '../../../controllers/notifications/localnotification_manager.dart';
-import '../../../controllers/salarycontroller.dart';
+import '../../../controllers/bonuscontroller.dart';
 import '../../../controllers/schedulescontroller.dart';
 import '../../../controllers/walletcontroller.dart';
 import '../../../g_controllers/user/user_controller.dart';
@@ -24,7 +24,7 @@ import '../../schedules/days.dart';
 import '../../schedules/monthly.dart';
 import '../../schedules/shorttrips.dart';
 import '../../schedules/weekly.dart';
-import '../mysalaries.dart';
+import '../mybonuses.dart';
 import '../paymentmethods.dart';
 import '../transfers/transfers.dart';
 import 'notifications.dart';
@@ -60,7 +60,7 @@ class _DriverHomeState extends State<DriverHome> {
   CommissionController commissionController = Get.find();
 
   final MapController _mapController = Get.find();
-  final SalaryController salaryController = Get.find();
+  final BonusController salaryController = Get.find();
 
   final storage = GetStorage();
 
@@ -794,7 +794,7 @@ class _DriverHomeState extends State<DriverHome> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Get.to(() => const MySalaries());
+            Get.to(() => const MyBonuses());
           },
           child: Image.asset("assets/images/salary.png",width:40,height:40),
         ),

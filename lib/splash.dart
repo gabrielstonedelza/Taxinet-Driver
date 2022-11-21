@@ -7,6 +7,7 @@ import 'package:taxinet_driver/views/login/loginview.dart';
 import 'package:taxinet_driver/views/login/newlogin.dart';
 
 import 'bottomnavigation.dart';
+import 'driver/driveronboarding.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (hasToken) {
       Timer(const Duration(seconds: 7),
-          () => Get.offAll(() => const MyBottomNavigationBar()));
+          () => Get.offAll(() => const DriverBoarding()));
     } else {
       Timer(const Duration(seconds: 7),
           () => Get.offAll(() => const NewLogin()));
