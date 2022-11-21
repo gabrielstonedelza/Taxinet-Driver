@@ -130,6 +130,7 @@ class _AddInventoryState extends State<AddInventory> {
   bool isPosting = false;
   var userWalletId = "";
   final SendSmsController sendSms = SendSmsController();
+  double commission = 0.0;
 
   void _startPosting()async{
     setState(() {
@@ -187,6 +188,9 @@ class _AddInventoryState extends State<AddInventory> {
       "first_aid_box": _firstAidBoxEnum?.name,
     });
     if(response.statusCode == 201){
+      setState(() {
+        commission = 0.10 * amountToPay;
+      });
       Get.snackbar("Success 😀", "inventory added.",
           duration: const Duration(seconds: 5),
           snackPosition: SnackPosition.BOTTOM,
@@ -194,7 +198,7 @@ class _AddInventoryState extends State<AddInventory> {
           colorText: defaultTextColor1);
       updateDriversWallet();
       processPaymentToday();
-      addToDriverCommissionToday();
+      addToDriverCommissionToday(commission.toStringAsFixed(2));
       Get.offAll(() => const MyBottomNavigationBar());
     }
     else{
@@ -255,7 +259,7 @@ class _AddInventoryState extends State<AddInventory> {
     }
   }
 
-  addToDriverCommissionToday()async {
+  addToDriverCommissionToday(String driverCommission)async {
     const requestUrl = "https://taxinetghana.xyz/add_driver_commission/";
     final myLink = Uri.parse(requestUrl);
     final response = await http.post(myLink, headers: {
@@ -264,7 +268,7 @@ class _AddInventoryState extends State<AddInventory> {
       "Authorization": "Token $uToken"
     }, body: {
       "driver": userController.driverProfileId,
-      "amount": "10",
+      "amount": driverCommission,
     });
     if(response.statusCode == 201){
 
