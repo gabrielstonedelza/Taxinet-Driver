@@ -92,7 +92,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
     switch (hour) {
       case 00:
         setState(() {
-          isClosingTime = true;
           isMidNight = true;
         });
         String driversPhone = userController.phoneNumber;
@@ -116,10 +115,16 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
         driversPhone = driversPhone.replaceFirst("0", '+233');
         if (alertUnLockCount == 0){
           localNotificationManager.showCarUnLockNotification("App Unlocked", "Hi good morning,your app is now accessible,please make payment and unlock your car.Thank you.");
+          String trackerSim = userController.driversTrackerSim;
+          trackerSim = trackerSim.replaceFirst("0", '+233');
+          sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
+          sendSms.sendMySms(driversPhone, "Taxinet",
+              "Attention!,your car is now locked.");
         }
         setState(() {
           alertUnLockCount = 1;
         });
+
         break;
     }
   }
@@ -217,7 +222,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
               ],
             ),
           ),
-          body: isClosingTime ? const CloseAppForDay() : screens[selectedIndex],
+          body: screens[selectedIndex],
         )
     );
   }

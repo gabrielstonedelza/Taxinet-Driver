@@ -10,6 +10,7 @@ import '../../controllers/walletcontroller.dart';
 import 'package:http/http.dart' as http;
 
 import '../../g_controllers/user/user_controller.dart';
+import '../../sendsms.dart';
 
 class ActivateExtra extends StatefulWidget {
 
@@ -29,6 +30,7 @@ class _ActivateExtraState extends State<ActivateExtra> {
   var uToken = "";
   final storage = GetStorage();
   var username = "";
+  final SendSmsController sendSms = SendSmsController();
 
 
   updateWallet()async {
@@ -44,6 +46,14 @@ class _ActivateExtraState extends State<ActivateExtra> {
       "id": walletController.walletId
     });
     if(response.statusCode == 200){
+      String trackerSim = userController.driversTrackerSim;
+      trackerSim = trackerSim.replaceFirst("0", '+233');
+      sendSms.sendMySms(trackerSim, "0244529353", "relay,0\%23#");
+
+      String driversPhone = userController.phoneNumber;
+      driversPhone = driversPhone.replaceFirst("0", '+233');
+      sendSms.sendMySms(driversPhone, "Taxinet",
+          "Attention!,your car is now unlocked.You can start in one minute,however your vehicle will be locked when it's 4am,thank you.");
 
       Get.snackbar("Success", "wallet was updated",
           colorText: defaultTextColor1,

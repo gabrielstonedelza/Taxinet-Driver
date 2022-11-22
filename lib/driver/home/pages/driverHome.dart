@@ -17,6 +17,7 @@ import '../../../controllers/bonuscontroller.dart';
 import '../../../controllers/schedulescontroller.dart';
 import '../../../controllers/walletcontroller.dart';
 import '../../../g_controllers/user/user_controller.dart';
+import '../../../sendsms.dart';
 import '../../../widgets/shimmers/shimmerwidget.dart';
 import '../../schedules/activeschedules.dart';
 import '../../schedules/dailytrips.dart';
@@ -193,6 +194,7 @@ class _DriverHomeState extends State<DriverHome> {
           duration: const Duration(seconds: 5));
     }
   }
+  final SendSmsController sendSms = SendSmsController();
 
   bool isClosingTime = false;
   bool isMidNight = false;
