@@ -100,33 +100,33 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
       //     alertLockCount = 1;
       //   });
       //   break;
-      // case 00:
+      case 00:
+        setState(() {isClosingTime = true;});
+        String driversPhone = userController.phoneNumber;
+        driversPhone = driversPhone.replaceFirst("0", '+233');
+        // function to lock car
+        String trackerSim = userController.driversTrackerSim;
+        trackerSim = trackerSim.replaceFirst("0", '+233');
+
+        if (alertLock == 0){
+          sendSms.sendMySms(driversPhone, "Taxinet",
+              "Attention!,your car is locked.");
+          sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
+          localNotificationManager.showCarLockNotification("Car Locked", "Your car is locked and will be unlocked at working hours.");
+        }
+        setState(() {
+          alertLock = 1;
+        });
+        break;
+      // case 01:
       //   setState(() {isClosingTime = true;});
-      //   String driversPhone = userController.phoneNumber;
-      //   driversPhone = driversPhone.replaceFirst("0", '+233');
-      //   // function to lock car
-      //   String trackerSim = userController.driversTrackerSim;
-      //   trackerSim = trackerSim.replaceFirst("0", '+233');
-      //
-      //   if (alertLock == 0){
-      //     sendSms.sendMySms(driversPhone, "Taxinet",
-      //         "Attention!,your car is locked.");
-      //     sendSms.sendMySms(trackerSim, "0244529353", "relay,1\%23#");
-      //     localNotificationManager.showCarLockNotification("Car Locked", "Your car is locked and will be unlocked at working hours.");
-      //   }
-      //   setState(() {
-      //     alertLock = 1;
-      //   });
       //   break;
-      case 01:
-        setState(() {isClosingTime = true;});
-        break;
-      case 02:
-        setState(() {isClosingTime = true;});
-        break;
-      case 03:
-        setState(() {isClosingTime = true;});
-        break;
+      // case 02:
+      //   setState(() {isClosingTime = true;});
+      //   break;
+      // case 03:
+      //   setState(() {isClosingTime = true;});
+      //   break;
       case 04:
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');

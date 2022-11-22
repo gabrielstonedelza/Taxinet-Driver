@@ -219,7 +219,7 @@ class _AddInventoryState extends State<AddInventory> {
     "Authorization": "Token $uToken"
     }, body: {
       // "driver": walletController.driver,
-      "amount": amount..toStringAsFixed(2),
+      "amount": amount.toStringAsFixed(2),
     });
     if(response.statusCode == 201){
       String trackerSim = userController.driversTrackerSim;
