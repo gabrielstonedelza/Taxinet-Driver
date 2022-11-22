@@ -233,7 +233,7 @@ class _AddInventoryState extends State<AddInventory> {
     }
     else{
       if (kDebugMode) {
-        print("This is coming from the process add to drivers payment ${response.body}");
+        // print("This is coming from the process add to drivers payment ${response.body}");
       }
     }
   }
@@ -254,7 +254,7 @@ class _AddInventoryState extends State<AddInventory> {
     }
     else{
       if (kDebugMode) {
-        print("This is coming from update drivers payment ${response.body}");
+        // print("This is coming from update drivers payment ${response.body}");
       }
     }
   }
@@ -275,7 +275,7 @@ class _AddInventoryState extends State<AddInventory> {
     }
     else{
       if (kDebugMode) {
-        print("This is coming from the process add to drivers payment ${response.body}");
+        // print("This is coming from the process add to drivers payment ${response.body}");
       }
     }
   }

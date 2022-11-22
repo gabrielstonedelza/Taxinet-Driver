@@ -48,6 +48,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   int alertLockCount = 0;
   int alertUnLockCount = 0;
   int alertLock = 0;
+  bool isMidNight = false;
 
   fetchBlockedAgents()async{
     const url = "https://fnetghana.xyz/get_blocked_users/";
@@ -89,19 +90,11 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   void checkTheTime(){
     var hour = DateTime.now().hour;
     switch (hour) {
-      // case 23:
-      //   String driversPhone = userController.phoneNumber;
-      //   driversPhone = driversPhone.replaceFirst("0", '+233');
-      //   if (alertLockCount == 0){
-      //     sendSms.sendMySms(driversPhone, "Taxinet",
-      //         "Attention!,please be advised, your car will be locked in one hour time,thank you.");
-      //   }
-      //   setState(() {
-      //     alertLockCount = 1;
-      //   });
-      //   break;
       case 00:
-        setState(() {isClosingTime = true;});
+        setState(() {
+          isClosingTime = true;
+          isMidNight = true;
+        });
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');
         // function to lock car
@@ -118,15 +111,6 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
           alertLock = 1;
         });
         break;
-      // case 01:
-      //   setState(() {isClosingTime = true;});
-      //   break;
-      // case 02:
-      //   setState(() {isClosingTime = true;});
-      //   break;
-      // case 03:
-      //   setState(() {isClosingTime = true;});
-      //   break;
       case 04:
         String driversPhone = userController.phoneNumber;
         driversPhone = driversPhone.replaceFirst("0", '+233');

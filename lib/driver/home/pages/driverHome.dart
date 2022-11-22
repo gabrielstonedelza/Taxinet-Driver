@@ -24,6 +24,7 @@ import '../../schedules/days.dart';
 import '../../schedules/monthly.dart';
 import '../../schedules/shorttrips.dart';
 import '../../schedules/weekly.dart';
+import '../activateextra.dart';
 import '../mybonuses.dart';
 import '../paymentmethods.dart';
 import '../transfers/transfers.dart';
@@ -32,7 +33,7 @@ import 'notifications.dart';
 
 
 class DriverHome extends StatefulWidget {
-  DriverHome({Key? key}) : super(key: key);
+  const DriverHome({Key? key}) : super(key: key);
 
   @override
   State<DriverHome> createState() => _DriverHomeState();
@@ -193,6 +194,40 @@ class _DriverHomeState extends State<DriverHome> {
     }
   }
 
+  bool isClosingTime = false;
+  bool isMidNight = false;
+
+  void checkTheTime(){
+    var hour = DateTime.now().hour;
+    switch (hour) {
+      case 00:
+        setState(() {
+          isMidNight = true;
+        });
+        break;
+      case 01:
+        setState(() {
+          isMidNight = false;
+        });
+        break;
+      case 02:
+        setState(() {
+          isMidNight = false;
+        });
+        break;
+      case 03:
+        setState(() {
+          isMidNight = false;
+        });
+        break;
+      case 04:
+        setState(() {
+          isMidNight = false;
+        });
+        break;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -209,6 +244,7 @@ class _DriverHomeState extends State<DriverHome> {
     if (storage.read("userid") != null) {
       userid = storage.read("userid");
     }
+    checkTheTime();
 
     scheduleController.getActiveSchedules(uToken);
     scheduleController.getAllSchedules(uToken);
@@ -241,6 +277,7 @@ class _DriverHomeState extends State<DriverHome> {
       notificationController.getAllUnReadNotifications(uToken);
       salaryController.getAllSalary(uToken);
       commissionController.getAllCommissions(uToken);
+      checkTheTime();
     });
 
     getAllTriggeredNotifications();
@@ -549,7 +586,12 @@ class _DriverHomeState extends State<DriverHome> {
                           Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Center(
+                              isMidNight ? IconButton(
+                                onPressed: () {
+                                  Get.to(() => const ActivateExtra());
+                                },
+                                icon:Image.asset("assets/images/extra.png",width:40,height:40,fit: BoxFit.cover)
+                              ) :const Center(
                                   child: Text("Schedules",style:TextStyle(fontWeight: FontWeight.bold,fontSize: 25,color: defaultTextColor2),)
                               ),
                               const SizedBox(height: 10,),
