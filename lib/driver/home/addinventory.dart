@@ -186,6 +186,7 @@ class _AddInventoryState extends State<AddInventory> {
       "warning_triangle": _triangleEnum?.name,
       "fire_extinguisher": _fireExtinguisherEnum?.name,
       "first_aid_box": _firstAidBoxEnum?.name,
+      "inspector_name": "Dudu Faisal",
     });
     if(response.statusCode == 201){
       setState(() {

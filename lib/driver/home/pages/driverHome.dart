@@ -209,17 +209,17 @@ class _DriverHomeState extends State<DriverHome> {
         break;
       case 01:
         setState(() {
-          isMidNight = false;
+          isMidNight = true;
         });
         break;
       case 02:
         setState(() {
-          isMidNight = false;
+          isMidNight = true;
         });
         break;
       case 03:
         setState(() {
-          isMidNight = false;
+          isMidNight = true;
         });
         break;
       case 04:
