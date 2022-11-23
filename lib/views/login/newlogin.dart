@@ -1,10 +1,14 @@
 import "package:flutter/material.dart";
 import 'package:get_storage/get_storage.dart';
-import 'package:url_launcher/url_launcher.dart';
 import "package:get/get.dart";
 import '../../constants/app_colors.dart';
 import '../../g_controllers/login/my_login_controller.dart';
 import '../../g_controllers/user/user_controller.dart';
+import 'package:url_launcher/url_launcher.dart';
+
+
+
+
 class NewLogin extends StatefulWidget {
   const NewLogin({Key? key}) : super(key: key);
 
@@ -38,15 +42,14 @@ class _NewLoginState extends State<NewLogin> {
       isPosting = false;
     });
   }
+  final Uri _url = Uri.parse('https://taxinetghana.xyz/password-reset/');
 
-  Future<void> _launchInBrowser(String url) async{
-    if(await canLaunch(url)){
-      await launch(url,forceSafariVC: false,forceWebView: false);
-    }
-    else{
-      throw "Could not launch $url";
+  Future<void> _launchUrl() async {
+    if (!await launchUrl(_url)) {
+      throw 'Could not launch $_url';
     }
   }
+
 
 
   @override
@@ -193,7 +196,7 @@ class _NewLoginState extends State<NewLogin> {
                     const SizedBox(height: 20),
                     InkWell(
                         onTap: () async{
-                          await _launchInBrowser("https://taxinetghana.xyz/password-reset/");
+                          await _launchUrl();
                         },
                         child: const Text("Forgot Password",style: TextStyle(fontWeight: FontWeight.bold,color: defaultTextColor2),)),
                     const SizedBox(height: 25,),
