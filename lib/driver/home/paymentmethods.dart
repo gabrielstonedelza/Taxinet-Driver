@@ -3,12 +3,11 @@ import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import 'package:get_storage/get_storage.dart';
-import '../../bottomnavigation.dart';
 import '../../constants/app_colors.dart';
 import 'package:http/http.dart' as http;
 
-import '../../g_controllers/user/user_controller.dart';
-
+import '../../g_controller/userController.dart';
+import '../../views/bottomnavigationbar.dart';
 
 class PaymentMethods extends StatefulWidget {
   String amount;
@@ -23,10 +22,11 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   List paymentOptions =[
     "Select Payment Option",
     "Mobile Money",
-    "Bank",
+    "Ecobank",
   ];
   String _currentSelectedPaymentOption = "Select Payment Option";
   String message = "";
+  String message2 = "";
   late final TextEditingController transactionIdController;
   late final TextEditingController amountController;
   final _formKey = GlobalKey<FormState>();
@@ -48,6 +48,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
   final storage = GetStorage();
   var username = "";
   bool isMobileMoney = false;
+  bool isEcoBank = false;
 
   requestTopUp() async {
     const requestUrl = "https://taxinetghana.xyz/request_top_up/";
@@ -57,7 +58,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
     }, body: {
-      "user": userController.driverProfileId,
+      "user": userController.passengerProfileId,
       "amount": amountController.text,
       "top_up_option": _currentSelectedPaymentOption,
       "transaction_id": transactionIdController.text,
@@ -184,15 +185,23 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                               if(newValueSelected == "Mobile Money"){
                                 setState(() {
                                   isMobileMoney = true;
+                                  isEcoBank = false;
                                   message = "Please send mobile money to 0244950505,get transaction id,enter transaction id below to continue.";
                                 });
                               }
-                              else{
+                              if(newValueSelected == "Ecobank"){
                                 setState(() {
-                                  message = "";
                                   isMobileMoney = false;
+                                  isEcoBank = true;
+                                  message = "Please send from your Xpress accounts to Taxinet Logistics account(1441002567287),get the transaction id and complete the form.";
                                 });
                               }
+                              // else{
+                              //   setState(() {
+                              //     message = "";
+                              //     isMobileMoney = false;
+                              //   });
+                              // }
                             },
                             value: _currentSelectedPaymentOption,
                           ),
@@ -304,7 +313,13 @@ class _PaymentMethodsState extends State<PaymentMethods> {
                       child: Center(
                           child: Text(message,style: const TextStyle(fontWeight: FontWeight.bold))
                       ),
-                    ) : Container()
+                    ) : Container(),const SizedBox(height:20),
+                    isEcoBank ? SlideInUp(
+                      animate: true,
+                      child: Center(
+                          child: Text(message,style: const TextStyle(fontWeight: FontWeight.bold))
+                      ),
+                    ) : Container(),
                   ],
                 ),
               ),
