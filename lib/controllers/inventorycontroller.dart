@@ -13,6 +13,7 @@ class InventoryController extends GetxController{
   String uToken = "";
 
   List inventories = [];
+  List inventoryDates = [];
   String driversPic = "";
   String driversName = "";
   String registrationNumber= "";
@@ -85,6 +86,11 @@ class InventoryController extends GetxController{
       if (response.statusCode == 200) {
         var jsonData = jsonDecode(response.body);
         inventories.assignAll(jsonData);
+        for(var i in inventories) {
+          if(!inventoryDates.contains(i['date_checked'])){
+            inventoryDates.add(i['date_checked']);
+          }
+        }
         update();
       }
     } catch (e) {

@@ -3,11 +3,12 @@ import 'package:flutter/foundation.dart';
 import "package:flutter/material.dart";
 import "package:get/get.dart";
 import 'package:get_storage/get_storage.dart';
+import '../../bottomnavigation.dart';
 import '../../constants/app_colors.dart';
 import 'package:http/http.dart' as http;
 
-import '../../g_controller/userController.dart';
-import '../../views/bottomnavigationbar.dart';
+import '../../g_controllers/user/user_controller.dart';
+
 
 class PaymentMethods extends StatefulWidget {
   String amount;
@@ -58,7 +59,7 @@ class _PaymentMethodsState extends State<PaymentMethods> {
       'Accept': 'application/json',
       "Authorization": "Token $uToken"
     }, body: {
-      "user": userController.passengerProfileId,
+      "user": userController.driverProfileId,
       "amount": amountController.text,
       "top_up_option": _currentSelectedPaymentOption,
       "transaction_id": transactionIdController.text,

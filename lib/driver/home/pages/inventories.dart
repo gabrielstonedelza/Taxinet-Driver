@@ -23,11 +23,25 @@ class _InventoriesState extends State<Inventories> {
   WalletController walletController = Get.find();
   double amountToPay = 70.0;
   bool canPayToday = false;
+  final _currentDate = DateTime.now();
+  bool hasCheckedInToday = false;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    // print(_currentDate.toString().substring(0,10));
+    // print(controller.inventoryDates);
+    if(controller.inventoryDates.contains(_currentDate.toString().substring(0,10))){
+      setState(() {
+        hasCheckedInToday = true;
+      });
+    }
+    else{
+      setState(() {
+        hasCheckedInToday = false;
+      });
+    }
     if(double.parse(walletController.wallet) >= amountToPay){
       setState(() {
         canPayToday = true;
@@ -49,7 +63,7 @@ class _InventoriesState extends State<Inventories> {
         backgroundColor:primaryColor,
         title: const Text("Inventories"),
         actions: [
-          IconButton(
+          hasCheckedInToday ? Container() : IconButton(
             icon: const Icon(FontAwesomeIcons.circlePlus,size:30),
             onPressed: (){
               canPayToday ?
