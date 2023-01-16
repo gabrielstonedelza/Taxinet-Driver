@@ -506,33 +506,33 @@ class _DriverHomeState extends State<DriverHome> {
                             )),
                       ),
                       const SizedBox(height: 10),
-                      Center(
-                        child: userController.profileImageUpload !=
-                            null
-                            ? GetBuilder<UserController>(
-                          builder: (controller) {
-                            return CircleAvatar(
-                              backgroundImage: FileImage(
-                                  userController
-                                      .profileImageUpload!),
-                              radius: size.width * 0.14,
-                              backgroundColor: Colors.pink,
-                            );
-                          },
-                        )
-                            : GetBuilder<UserController>(
-                          builder: (controller) {
-                            return userController.isLoading ? const ShimmerWidget.circular(width: 100, height: 100) : userController.profileImage == "" ? const CircleAvatar(
-                              backgroundImage: AssetImage("assets/images/user.png"),
-                              radius: 50,
-                            ) :CircleAvatar(
-                              backgroundImage: NetworkImage(
-                                  userController.profileImage),
-                              radius: size.width * 0.14,
-                            );
-                          },
-                        ),
-                      ),
+                      // Center(
+                      //   child: userController.profileImageUpload !=
+                      //       null
+                      //       ? GetBuilder<UserController>(
+                      //     builder: (controller) {
+                      //       return CircleAvatar(
+                      //         backgroundImage: FileImage(
+                      //             userController
+                      //                 .profileImageUpload!),
+                      //         radius: size.width * 0.14,
+                      //         backgroundColor: Colors.pink,
+                      //       );
+                      //     },
+                      //   )
+                      //       : GetBuilder<UserController>(
+                      //     builder: (controller) {
+                      //       return userController.isLoading ? const ShimmerWidget.circular(width: 100, height: 100) : userController.profileImage == "" ? const CircleAvatar(
+                      //         backgroundImage: AssetImage("assets/images/user.png"),
+                      //         radius: 50,
+                      //       ) :CircleAvatar(
+                      //         backgroundImage: NetworkImage(
+                      //             userController.profileImage),
+                      //         radius: size.width * 0.14,
+                      //       );
+                      //     },
+                      //   ),
+                      // ),
                       Expanded(
                         child: Center(child: GetBuilder<WalletController>(
                             builder: (controller) {

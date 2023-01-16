@@ -72,7 +72,7 @@ class _MyBottomNavigationBarState extends State<MyBottomNavigationBar> {
   }
 
   final screens = [
-    DriverHome(),
+    const DriverHome(),
     const Inventories(),
     Notifications(),
     const MyProfile(),
