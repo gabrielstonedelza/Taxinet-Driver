@@ -64,6 +64,7 @@ class _TransfersState extends State<Transfers> {
       userType = jsonData['user_type'];
       userId = jsonData['id'].toString();
       fullName = jsonData['full_name'];
+      print(response.body);
       getReceiversWallet();
     } else {
       if (kDebugMode) {
@@ -219,189 +220,193 @@ class _TransfersState extends State<Transfers> {
         body: SingleChildScrollView(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(18.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: TextFormField(
-                          onChanged: (value) {
-                            if(value.length == userController.uniqueCode.length && value == userController.uniqueCode){
-                              Get.snackbar("Transfer Error",
-                                  "You cannot transfer to yourself",
-                                  colorText: defaultTextColor1,
-                                  snackPosition: SnackPosition.TOP,
-                                  backgroundColor: Colors.red,
-                                  duration: const Duration(seconds: 5));
-                              setState(() {
-                                isOwnCode = false;
-                              });
-                            }
-                            else{
-                              if (value.length == userController.uniqueCode.length &&
-                                  userController.allUsersUniqueCodes
-                                      .contains(value)) {
-                                setState(() {
-                                  isOwnCode = true;
-                                });
-                                getUserDetails(_userUniqueCode.text.trim());
-                              } else if (value.length == 8 &&
-                                  !userController.allUsersUniqueCodes
-                                      .contains(value)) {
-                                Get.snackbar("Code Error",
-                                    "can't find user with unique code",
-                                    colorText: defaultTextColor1,
-                                    snackPosition: SnackPosition.TOP,
-                                    backgroundColor: Colors.red,
-                                    duration: const Duration(seconds: 5));
-                                setState(() {
-                                  isOwnCode = false;
-                                });
-                              }
-                            }
-
-                          },
-                          controller: _userUniqueCode,
-                          cursorRadius: const Radius.elliptical(3, 3),
-                          cursorWidth: 3,
-                          cursorColor: defaultBlack,
-                          decoration: const InputDecoration(
-                            labelText: "Enter users unique code",
-                            labelStyle: TextStyle(color: secondaryColor),
-                            focusColor: primaryColor,
-                            fillColor: primaryColor,
-                          ),
-                          textInputAction: TextInputAction.next,
-                          keyboardType: TextInputType.text,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter unique code";
-                            }
-                          },
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 10.0),
-                        child: TextFormField(
-                          onChanged: (value) {
-                            if (value.isNotEmpty &&
-                                double.parse(_amountController.text) >
-                                    sendersWallet) {
-                              setState(() {
-                                amountGreaterThanBalance = true;
-                                amountHasValue = false;
-                                amountError =
-                                "Your balance is less than what you are trying to send";
-                              });
-                            } else {
-                              setState(() {
-                                amountGreaterThanBalance = false;
-                                amountHasValue = true;
-                                amountError = "";
-                              });
-                            }
-                            if (value.isNotEmpty) {
-                              setState(() {
-                                amountHasValue = true;
-                              });
-                            } else {
-                              setState(() {
-                                amountHasValue = false;
-                              });
-                            }
-                          },
-                          controller: _amountController,
-                          cursorRadius: const Radius.elliptical(3, 3),
-                          cursorWidth: 3,
-                          cursorColor: defaultBlack,
-                          decoration: const InputDecoration(
-                            labelText: "Enter amount",
-                            labelStyle: TextStyle(color: secondaryColor),
-                            focusColor: primaryColor,
-                            fillColor: primaryColor,
-                          ),
-                          textInputAction: TextInputAction.done,
-                          keyboardType: TextInputType.number,
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "Please enter amount";
-                            }
-                          },
-                        ),
-                      ),
-                      amountGreaterThanBalance
-                          ? Center(
-                          child: Text(amountError,
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold)))
-                          : Container(),
-                      const SizedBox(height: 20),
-                      !isPosting &&
-                          isOwnCode &&
-                          amountHasValue &&
-                          !amountGreaterThanBalance
-                          ? RawMaterialButton(
-                        onPressed: () {
-                          _startPosting();
-                          if (_formKey.currentState!.validate()) {
-                            processWalletTransfer();
-                            setState(() {
-                              currentAmountForSender = sendersWallet -
-                                  double.parse(
-                                      _amountController.text.trim());
-                              currentAmountForReceiver = receiversWallet +
-                                  double.parse(
-                                      _amountController.text.trim());
-                            });
-                          }
-                        },
-                        // child: const Text("Send"),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        elevation: 8,
-                        fillColor: defaultBlack,
-                        splashColor: defaultColor,
-                        child: const Text(
-                          "Send",
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              color: defaultTextColor1),
-                        ),
-                      )
-                          : Container(),
-                      const SizedBox(height: 20),
-                      isOwnCode
-                          ? SlideInUp(
-                        animate: true,
-                        child: Card(
-                            elevation: 12,
-                            shape: const RoundedRectangleBorder(
-                                borderRadius: BorderRadius.vertical(
-                                    top: Radius.circular(25.0))),
-                            child: SizedBox(
-                              width: 200,
-                              height: 120,
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  Text(fullName,style:const TextStyle(fontWeight: FontWeight.bold)),
-                                  Text(userName)
-                                ],
-                              ),
-                            )),
-                      )
-                          : Container(),
-                    ],
-                  ),
-                ),
-              )
+            children: const [
+              SizedBox(height:100),
+              Center(
+                  child: Text("Transfers coming soon",style: TextStyle(fontWeight:FontWeight.bold,fontSize: 20),)
+              ),
+              // Padding(
+              //   padding: const EdgeInsets.all(18.0),
+              //   child: Form(
+              //     key: _formKey,
+              //     child: Column(
+              //       children: [
+              //         Padding(
+              //           padding: const EdgeInsets.only(bottom: 10.0),
+              //           child: TextFormField(
+              //             onChanged: (value) {
+              //               if(value.length == userController.uniqueCode.length && value == userController.uniqueCode){
+              //                 Get.snackbar("Transfer Error",
+              //                     "You cannot transfer to yourself",
+              //                     colorText: defaultTextColor1,
+              //                     snackPosition: SnackPosition.TOP,
+              //                     backgroundColor: Colors.red,
+              //                     duration: const Duration(seconds: 5));
+              //                 setState(() {
+              //                   isOwnCode = false;
+              //                 });
+              //               }
+              //               else{
+              //                 if (value.length == userController.uniqueCode.length &&
+              //                     userController.allUsersUniqueCodes
+              //                         .contains(value)) {
+              //                   setState(() {
+              //                     isOwnCode = true;
+              //                   });
+              //                   getUserDetails(_userUniqueCode.text.trim());
+              //                 } else if (value.length == 8 &&
+              //                     !userController.allUsersUniqueCodes
+              //                         .contains(value)) {
+              //                   Get.snackbar("Code Error",
+              //                       "can't find user with unique code",
+              //                       colorText: defaultTextColor1,
+              //                       snackPosition: SnackPosition.TOP,
+              //                       backgroundColor: Colors.red,
+              //                       duration: const Duration(seconds: 5));
+              //                   setState(() {
+              //                     isOwnCode = false;
+              //                   });
+              //                 }
+              //               }
+              //
+              //             },
+              //             controller: _userUniqueCode,
+              //             cursorRadius: const Radius.elliptical(3, 3),
+              //             cursorWidth: 3,
+              //             cursorColor: defaultBlack,
+              //             decoration: const InputDecoration(
+              //               labelText: "Enter users unique code",
+              //               labelStyle: TextStyle(color: secondaryColor),
+              //               focusColor: primaryColor,
+              //               fillColor: primaryColor,
+              //             ),
+              //             textInputAction: TextInputAction.next,
+              //             keyboardType: TextInputType.text,
+              //             validator: (value) {
+              //               if (value!.isEmpty) {
+              //                 return "Please enter unique code";
+              //               }
+              //             },
+              //           ),
+              //         ),
+              //         const SizedBox(height: 20),
+              //         Padding(
+              //           padding: const EdgeInsets.only(bottom: 10.0),
+              //           child: TextFormField(
+              //             onChanged: (value) {
+              //               if (value.isNotEmpty &&
+              //                   double.parse(_amountController.text) >
+              //                       sendersWallet) {
+              //                 setState(() {
+              //                   amountGreaterThanBalance = true;
+              //                   amountHasValue = false;
+              //                   amountError =
+              //                   "Your balance is less than what you are trying to send";
+              //                 });
+              //               } else {
+              //                 setState(() {
+              //                   amountGreaterThanBalance = false;
+              //                   amountHasValue = true;
+              //                   amountError = "";
+              //                 });
+              //               }
+              //               if (value.isNotEmpty) {
+              //                 setState(() {
+              //                   amountHasValue = true;
+              //                 });
+              //               } else {
+              //                 setState(() {
+              //                   amountHasValue = false;
+              //                 });
+              //               }
+              //             },
+              //             controller: _amountController,
+              //             cursorRadius: const Radius.elliptical(3, 3),
+              //             cursorWidth: 3,
+              //             cursorColor: defaultBlack,
+              //             decoration: const InputDecoration(
+              //               labelText: "Enter amount",
+              //               labelStyle: TextStyle(color: secondaryColor),
+              //               focusColor: primaryColor,
+              //               fillColor: primaryColor,
+              //             ),
+              //             textInputAction: TextInputAction.done,
+              //             keyboardType: TextInputType.number,
+              //             validator: (value) {
+              //               if (value!.isEmpty) {
+              //                 return "Please enter amount";
+              //               }
+              //             },
+              //           ),
+              //         ),
+              //         amountGreaterThanBalance
+              //             ? Center(
+              //             child: Text(amountError,
+              //                 style: const TextStyle(
+              //                     fontWeight: FontWeight.bold)))
+              //             : Container(),
+              //         const SizedBox(height: 20),
+              //         !isPosting &&
+              //             isOwnCode &&
+              //             amountHasValue &&
+              //             !amountGreaterThanBalance
+              //             ? RawMaterialButton(
+              //           onPressed: () {
+              //             _startPosting();
+              //             if (_formKey.currentState!.validate()) {
+              //               processWalletTransfer();
+              //               setState(() {
+              //                 currentAmountForSender = sendersWallet -
+              //                     double.parse(
+              //                         _amountController.text.trim());
+              //                 currentAmountForReceiver = receiversWallet +
+              //                     double.parse(
+              //                         _amountController.text.trim());
+              //               });
+              //             }
+              //           },
+              //           // child: const Text("Send"),
+              //           shape: RoundedRectangleBorder(
+              //               borderRadius: BorderRadius.circular(8)),
+              //           elevation: 8,
+              //           fillColor: defaultBlack,
+              //           splashColor: defaultColor,
+              //           child: const Text(
+              //             "Send",
+              //             style: TextStyle(
+              //                 fontWeight: FontWeight.bold,
+              //                 fontSize: 15,
+              //                 color: defaultTextColor1),
+              //           ),
+              //         )
+              //             : Container(),
+              //         const SizedBox(height: 20),
+              //         isOwnCode
+              //             ? SlideInUp(
+              //           animate: true,
+              //           child: Card(
+              //               elevation: 12,
+              //               shape: const RoundedRectangleBorder(
+              //                   borderRadius: BorderRadius.vertical(
+              //                       top: Radius.circular(25.0))),
+              //               child: SizedBox(
+              //                 width: 200,
+              //                 height: 120,
+              //                 child: Column(
+              //                   mainAxisAlignment:
+              //                   MainAxisAlignment.center,
+              //                   children: [
+              //                     Text(fullName,style:const TextStyle(fontWeight: FontWeight.bold)),
+              //                     Text(userName)
+              //                   ],
+              //                 ),
+              //               )),
+              //         )
+              //             : Container(),
+              //       ],
+              //     ),
+              //   ),
+              // )
             ],
           ),
         ));
