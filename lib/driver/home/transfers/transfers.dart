@@ -7,7 +7,6 @@ import "package:get/get.dart";
 import '../../../constants/app_colors.dart';
 
 import '../../../g_controllers/user/user_controller.dart';
-import '../../../widgets/shimmers/shimmerwidget.dart';
 import 'package:http/http.dart' as http;
 
 class Transfers extends StatefulWidget {

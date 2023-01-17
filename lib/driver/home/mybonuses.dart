@@ -142,7 +142,7 @@ class _MyBonusesState extends State<MyBonuses> {
               }
           );
         }),
-        floatingActionButton:FloatingActionButton(
+        floatingActionButton:bonusesController.myBonuses.isEmpty ? Container() : FloatingActionButton(
             onPressed: () {
               showMaterialModalBottomSheet(
                 context: context,

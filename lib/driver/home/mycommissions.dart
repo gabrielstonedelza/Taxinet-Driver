@@ -169,7 +169,7 @@ class _MyCommissionsState extends State<MyCommissions> {
               }
           );
         }),
-      floatingActionButton:FloatingActionButton(
+      floatingActionButton:commissionController.myCommission.isEmpty ? Container() : FloatingActionButton(
         onPressed: () {
           showMaterialModalBottomSheet(
             context: context,
