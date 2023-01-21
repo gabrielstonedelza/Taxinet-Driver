@@ -224,11 +224,11 @@ class _AddInventoryState extends State<AddInventory> {
     });
     if(response.statusCode == 201){
       String trackerSim = userController.driversTrackerSim;
-      trackerSim = trackerSim.replaceFirst("0", '+233');
+      // trackerSim = trackerSim.replaceFirst("0", '+233');
       sendSms.sendMySms(trackerSim, "0244529353", "relay,0\%23#");
 
       String driversPhone = userController.phoneNumber;
-      driversPhone = driversPhone.replaceFirst("0", '+233');
+      // driversPhone = driversPhone.replaceFirst("0", '+233');
       sendSms.sendMySms(driversPhone, "Taxinet",
           "Attention!,your car is now unlocked.You can start in one minute");
     }
